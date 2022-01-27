@@ -1,4 +1,4 @@
-SRC=refcard-python.tex 
+SRC=refcard.tex 
 
 all: $(SRC:.tex=.pdf) preview.png
 
@@ -13,11 +13,11 @@ revision.tex:
 underlay.pdf: underlay.tex
 	latexmk $<
 
-preview.pdf: $(SRC:.tex=.pdf) underlay.pdf
-	qpdf $< --underlay underlay.pdf -- $@
+preview.pdf: $(SRC)
+	latexmk -jobname=$(basename $@) -pdflatex='xelatex %O "\def\tinted{tinted}\input{%S}"' $<
 
-preview.png: $(SRC)
-	gs -dSAFER -r150 -sDEVICE=pngalpha -o $@ $<
+%.png: %.pdf
+	gs -dSAFER -r150 -sDEVICE=pngalpha -dLastPage=1 -o $@ $<
 
 clean:
 	latexmk -C

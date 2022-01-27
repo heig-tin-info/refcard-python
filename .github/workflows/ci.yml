@@ -10,16 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
       - name: Build docker images
         run: docker build . -t local -f .devcontainer/Dockerfile        
       - name: Build
         run: docker run -v $GITHUB_WORKSPACE:/srv -w/srv local make
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update preview
       - name: Upload refcard
         uses: actions/upload-artifact@v2
         with:
           name: pdf
-          path: refcard-python.pdf
+          path: refcard.pdf
           if-no-files-found: error
   release:
     name: Create Release
@@ -42,13 +47,13 @@ jobs:
         with:
           name: pdf
           path: dist
-      - name: Upload Refcard Python
+      - name: Upload Refcard
         id: upload-pdf-refcard
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/refcard-python.pdf
-          asset_name: refcard-python.pdf
+          asset_path: dist/refcard.pdf
+          asset_name: refcard.pdf
           asset_content_type: application/pdf

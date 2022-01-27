@@ -1,0 +1,621 @@
+\documentclass{article}
+
+\usepackage[a4paper, landscape, margin=1cm]{geometry}
+\usepackage{fontspec}
+\usepackage[french]{babel}
+\usepackage[fontsize=6.5pt]{scrextend}
+\usepackage[T1]{fontenc}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{sectsty}
+\usepackage{lmodern}
+\usepackage{stix}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{multirow}
+\usepackage{titlesec}
+\usepackage{fancyvrb,cprotect}
+\input{revision}
+
+\ifdefined\tinted
+  \pagecolor{SpringGreen!60}
+\fi
+
+\setlength{\parskip}{0.2em}
+\setlength{\parindent}{0em}
+
+% Highlight configuration for C programming language
+\lstset{
+  language=python,
+  breaklines=true,
+  keywordstyle=\bfseries\color{black},
+  basicstyle=\ttfamily\color{black},
+  emphstyle={\em \color{gray}},
+  commentstyle=\color{gray}\ttfamily,
+  mathescape=true,
+  keepspaces=true,
+  showspaces=false,
+  showtabs=true,
+  tabsize=3,
+  columns=fullflexible,
+}
+
+% Configuration
+\renewcommand{\familydefault}{\sfdefault}
+
+\sectionfont{\fontsize{12}{15}\selectfont}
+\subsectionfont{\fontsize{10}{12}\selectfont}
+
+\allsectionsfont{\sffamily\underline}
+
+% No pages numbering
+\pagenumbering{gobble}
+
+% Titles and paragraphs more compact
+\titlespacing*{\section}{0pt}{0pt}{0pt}
+\titlespacing*{\subsection}{0pt}{0pt}{0pt}
+
+\newlength\mybaselinestretch
+\mybaselinestretch=0pt plus 0.02pt\relax
+\addtolength{\baselineskip}{\mybaselinestretch}
+
+\setlength\parindent{0pt}
+\setlength\tabcolsep{1.5pt}
+\setlength{\columnseprule}{0.4pt}
+
+% Macros
+\newcommand{\tab}{\hspace{2em}}
+\newcommand{\etc}{\small \ldots}
+\newcommand{\any}{$\hzigzag$~}
+\newcommand{\spc}{$\mathvisiblespace$}
+\newcommand{\cd}{\lstinline}
+
+\begin{document}
+
+\begin{multicols*}{4}
+
+\begin{center}
+  {\Large \bf Carte de référence Python 3.x} \\
+  HEIG-VD -- version \revision \ -- \revisiondate \\
+\end{center}
+
+Cette carte de référence peut être utilisée durant les travaux écrits
+des cours utilisant \emph{python} à moins que le contraire soit explicitement formulé. Elle est une liste non exhaustive des possibilités du langage Python 3. Ce travail est inspiré de \emph{Learn X in Y}.
+
+\section*{Différences entre Python 2.x et Python 3.x}
+
+\begin{lstlisting}
+print('hello') print 'hello'
+2/3 == 0.66    2/3 = 0
+"unicode"      u"unicode"
+range(1,2)     xrange(1,2)
+raise Exception("error") raise "error"
+\end{lstlisting}
+
+\section*{Opérateurs et généralités}
+
+\begin{lstlisting}
+5.0 // 3                # => 1 Division entière
+7 % 3                   # => 2 Modulo
+2**4                    # => 16 Exponentation
+not True == False       # => True (Valeurs booléeenes)
+True and False or False # => True 
+0 and 2                 # => 0 (Op. logiques sur int)
+0 == False              # => False 
+1 != 1                  # => False (Inégalités)
+1 < 2 < 3               # => True (Chaînage)
+None                    # Un objet de type None
+"etc" is None           # => False
+None is None            # => True
+bool(0)                 # => False
+bool("")                # => False
+
+[]                      # Liste 
+()                      # Tuple 
+{}                      # Dictionnaire
+""                      # Chaîne de caractères
+''                      # Chaîne de caractères
+\end{lstlisting}
+
+\section*{Initialisations}
+
+\begin{lstlisting}
+i = 42 + 2j       # Init une var complexe
+type(i)           # => <class 'complex'>
+a = [1, 2, 3, 4]  # Nouvelle instance de liste 
+b = a             # Référence vers la même liste
+b is a            # => True (b pointe sur a)
+b == a            # => True (objets a et b égaux)
+c = a[:]          # Copie de la liste
+c is a            # => False (c pas référence sur a)
+d = a.copy()      # Autre manière de copier une liste
+\end{lstlisting}
+
+\section*{Chaînes de caractères}
+
+\begin{lstlisting}
+"Hello, World!"
+'Hello, World, too!'
+"""Multi 
+Ligne"""
+"Carottes " + "Cuites" # => "Carottes Cuites"
+"A" "B"                # => "AB"
+"Trois" * 3            # => "TroisTroisTrois"
+"Webb"[0]              # => "W"
+"{} et {}".format("Python", "Java") # => "Python et Java"
+"{name} veut manger {eat}"
+    .format(name="Bob", eat="pizza") # => "Bob veut manger pizza"
+name = "Bob"
+"%s %d" % ("Hello", 42) # => "Hello 42"
+"{1} {0} {0} {1}".format("b", "a") # => "a b b a"
+f"Bonjour {name}!" # => "Bonjour Bob!"
+print("Hello", end="!") # => "Hello!"
+print("Hello", end="") # => "Hello"
+print("Hello") # => "Hello\n"
+print("Error", file=sys.stderr) # => "Error" sur stderr 
+
+','.join(["a", "b", "c"]) # => "a,b,c"
+"foobar".upper() # => "FOOBAR"
+"FOOBAR".lower() # => "foobar"
+"foobar".capitalize() # => "Foobar"
+"un chat gris".title() # => "Un chat gris"
+
+\end{lstlisting}
+
+\section*{Listes}
+Une liste est un tableau dynamique d'objets
+\begin{lstlisting}
+a = []              # Nouvelle instance de liste vide
+len(a)              # => 0
+a.append(1)         # a = [1]
+a.append(2)         # a = [1, 2]
+a.append(3, 4)      # a = [1, 2, 3, 4]
+a.pop()             # a = [4], retourne 3
+a[0]                # => 1
+a[-1]               # => 3 (en partant de la fin)
+a[42]               # => IndexError
+a[0:3]              # => [1, 2, 3]
+a[0:3:1]            # => [1, 2, 3]
+a[0:]               # de 0 à la fin
+a[:2]               # du début à 2
+a[::2]              # Un élément sur 2
+a[::-1]             # Inverse la liste
+del a[0]            # a = [2] (supprime 1)
+b = [4, 5, 6]
+a + b                       # => [1, 2, 3, 4, 5, 6]
+b.extend([8, 9])            # b = [4, 5, 6, 8, 9]
+1 in a                      # => True
+a = [1, 3.15, "Hu", [1, 2]] # Liste composite
+a, b, c = [1, 2, 3]         # a = 1, b = 2, c = 3
+a, b = b, a                 # a = 2, b = 1
+\end{lstlisting}
+
+\section*{Tuples}
+Un tuple est une liste non modifiable.
+\begin{lstlisting}
+a = (1, 2, 3)  # Nouvelle instance de tuple
+a[0]           # => 1
+a[0] = 42      # TypeError
+\end{lstlisting}
+
+\section*{Dictionnaires}
+Un dictionnaire est un hashmap, une collection de paires, valeurs 
+\begin{lstlisting}
+a = {}              # Nouvelle instance de dict
+a["key"] = "value"
+b = {"key": "value"}        
+invalid = {[1,2]: "value"}  # TypeError
+valid = {(1,2): "value"}    # Ok
+list(a.keys())              # => ["key"]
+list(a.values())            # => ["value"]
+a['oops']                   # KeyError
+a.get("oops")               # => None
+a.get("oops", "default")    # => "default"
+\end{lstlisting}
+
+\section*{Sets}
+Un set est une collection de valeurs uniques, sans ordre.
+\begin{lstlisting}
+a = set()      # Nouvelle instance de set
+a.add(1)       # a = {1}
+a.add(2)       # a = {1, 2}
+a.add(2)       # a = {1, 2} Déjà dans a
+b = {2, 5, 7}  # Nouvelle instance de set
+a.union(b)     # a = {1, 2, 5, 7}
+a & b          # a = {2} Intersection
+a | b          # a = {1, 2, 5, 7} Union
+a - b          # a = {1} Différence
+1 in a         # => False
+\end{lstlisting}
+
+\section*{Structures de contrôle}
+\begin{lstlisting}
+x = 42
+if x > 10: # Conditionnel if-elif-else
+    print("x est supérieur à 10")
+elif x > 5:
+    print("x est supérieur à 5")
+else:
+    print("x est inférieur ou égal à 5")
+
+# Boucle for
+for animal in ["chat", "chien", "oiseau"]:
+    print(f"Un {animal} est un mammifère")
+
+for i in range(4): print(i, end=" ") # 0 1 2 3 4
+for i in range(4, 8): print(i, end=" ") # 4 5 6 7
+for i in range(0, 10, 2): print(i, end=" ") # 0 2 4 6 8
+
+animaux = ["chat", "chien", "oiseau"]
+for i, animal in enumerate(animaux):
+    print(f"{i}: {animal}")
+# 0: chat 1: chien 2: oiseau
+
+d = {"c": 1, "b": 2, "a": 3}
+for key in d: print(key) # c b a
+for key in sorted(d): print(key) # a b c
+for key, value in d.items(): print(key, value) # a 3 b 2 c 1
+
+# Boucle while
+i = 0
+while i < 4: print(i += 1) # 1 2 3 4
+  
+# Switch (Python >=3.10)
+status = 400
+match status:
+  case 200: print("OK")
+  case 400: print("Bad Request")  
+  case 404: print("Not Found")
+  case _: print("Status inconnu") # Default      
+\end{lstlisting}
+
+\section*{Fonctions}
+\begin{lstlisting}
+def foo: 
+    pass # Pass est un mot clé qui ne fait rien
+
+def add(a, b, c): # a, b, c sont des paramètres
+    return a + b + c
+
+def add(a, b, c=0): # Paramètre optionnel
+    return a + b + c
+
+def add(a, b, *args): # Paramètre de type tuple
+    return a + b + sum(args)
+
+def display(*args): 
+    for arg in args: print(arg) \# Affiche toutes les valeurs
+
+def display(**kwargs): \# Paramètre de type dictionnaire
+    for key, value in kwargs.items(): print(key, value)
+
+def bar(a, b=0, *args, **kwargs):
+    print(a, b, args, kwargs) 
+bar(1, 2, 3, c=9, d=(1,2)) \# => 1 2 (3,) {'c': 9, 'd': (1, 2)}
+
+# Fonctions anonymes
+f = lambda x, y: x + y
+f(1, 2) # => 3
+def iterate(x, f):
+    for i in range(x):
+        f(i)
+iterate(3, lambda i: print(i)) # => 0 1 2
+
+(lambda x: x > 2)(3) # => True
+(lambda x, y: x ** 2 + y ** 2)(2, 3) # => 5
+
+x = 0 # Scope global (mauvaise pratique)
+def foo():
+    global x
+    x = 42
+foo() # x => 42
+
+def foo(): # Fonctions imbriquées
+    def bar():
+        print("bar")
+    bar()
+
+def double_numbers(iterable): # Générateur
+for i in iterable:
+    yield i + i
+
+# Annotation de fonction (Python >=3.8)
+def add(x: int, y: int) -> int:
+    return x + y
+\end{lstlisting}
+
+\section*{Fichiers}
+\begin{lstlisting}
+# Ouverture d'un fichier
+with open("file.txt", "r") as fp:
+    for line in fp:
+        print(line) # Affiche chaque ligne
+# r: lecture seule, w: écriture seule, a: écriture à la suite
+# b, mode binaire (rb, wb, ...)
+# t, mode texte (rt, wt, ...)
+# +, mode plus (r+, w+, ...)
+# U, mode UTF-8 (rU, wU, ...)
+\end{lstlisting}
+
+\section*{Exceptions}
+\begin{lstlisting}
+try: 
+    # Code susceptible d'échouer
+except Exception as e: 
+    # Code exécuté en cas d'erreur
+else: 
+    # Code exécuté en cas de succès
+finally: 
+    # Code exécuté quelque soit le résultat
+\end{lstlisting}
+
+\section*{Compréhensions}
+\begin{lstlisting}
+[2 ** x for x in range(5)] # => [1, 2, 4, 8, 16]
+{x for x in range(5)} # => {0, 1, 2, 3, 4}
+{x: x ** 2 for x in range(5)} # => {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+[x for x in range(5) if x % 2 == 0] # => [0, 2, 4]
+
+# Générateur sous forme de compréhension      
+values = (-x for x in [1,2,3,4,5])
+\end{lstlisting}
+
+\section*{Math}
+\begin{lstlisting}
+import math
+print(math.sqrt(16)) # => 4.0
+print(math.sin(math.pi / 2)) # => 1.0
+dir(math) # affiche les méthodes disponibles
+\end{lstlisting}
+
+\section*{Classes}
+\begin{lstlisting}
+class Human:   
+    # Attribut de classe partagé par toutes les instances
+    species = "Homo Sapiens" 
+
+    # Initialiseur (appelé à l'instanciation)
+    def __init__(self, name):
+        self.name = name # Propriété publique
+        self._age = 0 # Propriété cachée
+    
+    def say(self, msg):
+        print(f"{self.name}: {msg}")
+
+    def sing(self):
+        return 'yo... yo... microphone check... one two... one two...'
+        
+    # Partagée par toutes les instances
+    @classmethod
+    def get_species(cls):
+        return cls.species
+
+    # Méthode sans références sur la classe ou l'instance
+    @staticmethod
+    def grunt():
+        print("*grunt*")
+
+    # Getter
+    @property
+    def age(self):
+        return self._age
+
+    # Setter 
+    @age.setter
+    def age(self, value):
+        if value < 0:
+            raise ValueError("Age non valide")
+        self._age = value
+
+    # Suppresseur 
+    @age.deleter
+    def age(self):
+        raise AttributeError("Age non supprimable")
+
+    # Methodes magiques
+    def __str__(self):
+        return f"{self.name} ({self.age})"
+    
+    def __repr__(self):
+        return f"Human('{self.name}', {self.age})"
+    
+    def __len__(self):
+        return len(self.name)
+
+# Héritage
+class Supehero(Human):
+    species = "Super Homme"
+
+    def __init__(self, name, movie=False,
+        superpowers=["super strength", "bulletproofing"]):
+        self.fictional = True 
+        self.movie = movie
+        self.superpowers = superpowers
+        super().__init__(name) # Appel du constructeur de la classe parente 
+
+    def sing(self): # Surcharge de sing
+        return 'Dun, dun, DUN!'
+
+# Héritage multiple 
+class Batman(Human, Superhero):
+    def __init__(self, *args, **kwargs):
+        Superhero.__init__(self, 'anonymous', movie=True,
+        superpowers=['Wealthy'], *args, **kwargs)
+        Bat.__init__(self, *args, can_fly=False, **kwargs)
+
+        # override the value for the name attribute
+        self.name = 'Sad Affleck'
+\end{lstlisting}
+
+\section*{Décorateurs}
+\begin{lstlisting}
+from functools import wraps
+
+def beg(target_function):
+    @wraps(target_function)
+    def wrapper(*args, **kwargs):
+        msg, say_please = target_function(*args, **kwargs)
+        if say_please:
+            return "{} {}".format(msg, "Please! I am poor :(")
+        return msg
+
+    return wrapper
+
+@beg
+def say(say_please=False):
+    msg = "Can you buy me a beer?"
+    return msg, say_please
+
+print(say())                 # Can you buy me a beer?
+print(say(say_please=True))  # Can you buy me a beer? Please! I am poor :(
+\end{lstlisting}
+
+\section*{Loggeur et traceurs}
+\begin{lstlisting}
+import logging
+logging.warning('Watch out!')  # Message sur la console
+logging.info('I told you so')  # N'affiche rien 
+
+logging.basicConfig(
+    filename='example.log', encoding='utf-8', level=logging.DEBUG)
+logging.debug('Un message')
+
+logger = logging.getLogger(__name__) # Création d'un logger
+logger.setLevel(logging.DEBUG) 
+
+formatter = logging.Formatter(
+  '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger.setFormatter(formatter)
+logger.addHandler(logging.StreamHandler()) # Affiche sur la console
+
+\end{lstlisting}
+
+\section*{Singleton}
+\begin{lstlisting}
+class Singleton(type):
+_instances = {}
+def __call__(cls, *args, **kwargs):
+    if cls not in cls._instances:
+        cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+    return cls._instances[cls]
+
+class MyClass(BaseClass, metaclass=Singleton):
+    pass
+\end{lstlisting}
+
+\section*{Import et modules}
+\begin{lstlisting}
+from math import sqrt 
+from math import *     # Mauvaise pratique
+
+# Comportement par défaut à l'appel du script
+if __name__ == '__main__':
+    main()
+\end{lstlisting}
+
+\section*{Modules}
+\begin{description}
+\item[beautifulsoup4] bibliothèque pour manipuler des pages web
+\item[flask] framework pour créer des applications web
+\item[functools] bibliothèque pour manipuler des fonctions
+\item[itertools] bibliothèque pour manipuler des itérateurs
+\item[jinja] moteur de template
+\item[matplotlib] bibliothèque pour créer des graphiques
+\item[numpy] bibliothèque pour manipuler des tableaux
+\item[opencv] bibliothèque pour manipuler des images
+\item[pandas] bibliothèque pour manipuler des données
+\item[pillow] bibliothèque pour manipuler des images
+\item[pint] bibliothèque pour manipuler des unités
+\item[pytest] bibliothèque pour tester des applications 
+\item[requests] bibliothèque pour manipuler des requêtes HTTP
+\item[scipy] bibliothèque pour manipuler des fonctions mathématiques
+\item[seaborn] bibliothèque pour manipuler des graphiques
+\item[yaml] bibliothèque pour manipuler des fichiers YAML
+\item[json] bibliothèque pour manipuler des fichiers JSON
+\end{description}
+
+\subsection*{Numpy}
+\begin{lstlisting}
+>>> import numpy as np
+>>> a = np.arange(15).reshape(3, 5)
+>>> a
+array([[ 0,  1,  2,  3,  4],
+       [ 5,  6,  7,  8,  9],
+       [10, 11, 12, 13, 14]])
+>>> a.shape
+(3, 5)
+>>> a.ndim
+2
+>>> a.dtype.name
+'int64'
+>>> a.itemsize
+8
+>>> a.size
+15
+>>> type(a)
+<class 'numpy.ndarray'>
+>>> np.array([6, 7, 8]) * 2
+array([12, 14, 16])
+>>> np.zeros((3, 5))
+>>> np.zeros((3, 5), dtype=np.int16)
+array([[0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0]])
+>>> np.array([[1, 2], [3, 4]], dtype=complex)
+array([[1.+0.j, 2.+0.j],
+       [3.+0.j, 4.+0.j]])
+>>> np.linspace(0, 2, 9)
+array([0. , 0.2, 0.4, 0.6, 0.8, 1. , 1.2, 1.4, 1.6])
+\end{lstlisting}
+
+\subsection*{Matplotlib}
+\begin{lstlisting}
+>>> import matplotlib.pyplot as plt
+>>> x = np.linspace(0, 2, 100)
+>>> y = np.sin(2 * np.pi * x)
+>>> plt.plot(x, y)
+[<matplotlib.lines.Line2D object at 0x7f8b8b8b9b90>]
+>>> plt.ylabel('some numbers')
+>>> plt.show()
+\end{lstlisting}
+
+\subsection*{Functools}
+\begin{lstlisting}
+import functools 
+@cache
+def factorial(n):
+    return n * factorial(n-1) if n else 1
+\end{lstlisting}
+
+\subsection*{Collections}
+\begin{lstlisting}
+from collections.abc import Mapping
+class DefaultDict(Mapping):
+    def __init__(self, default_factory=None, *args, **kwargs):
+        self.default_factory = default_factory
+        self.store = dict()
+        self.update(dict(*args, **kwargs))
+    def __getitem__(self, key):
+        if key not in self.store:
+            self.store[key] = self.default_factory()
+        return self.store[key]
+    def __iter__(self):
+        return iter(self.store)
+    def __len__(self):
+        return len(self.store)
+    def __repr__(self):
+        return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)
+\end{lstlisting}
+
+\subsection*{Expressions régulières}
+\begin{lstlisting}
+import re 
+re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+['foot', 'fell', 'fastest']
+
+\end{lstlisting}
+
+
+\end{multicols*}
+
+\end{document}
