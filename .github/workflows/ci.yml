@@ -11,15 +11,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
-        with:
-          submodules: true
+      - name: Build docker images
+        run: docker build . -t local -f .devcontainer/Dockerfile        
       - name: Build
-        run: make
+        run: docker run -v $GITHUB_WORKSPACE:/srv -w/srv local make
       - name: Upload refcard
         uses: actions/upload-artifact@v2
         with:
           name: pdf
-          path: refcard-cpp.pdf
+          path: refcard-python.pdf
           if-no-files-found: error
   release:
     name: Create Release
@@ -42,13 +42,13 @@ jobs:
         with:
           name: pdf
           path: dist
-      - name: Upload Refcard C++
+      - name: Upload Refcard Python
         id: upload-pdf-refcard
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/refcard-cpp.pdf
-          asset_name: refcard-cpp.pdf
+          asset_path: dist/refcard-python.pdf
+          asset_name: refcard-python.pdf
           asset_content_type: application/pdf
