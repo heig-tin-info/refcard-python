@@ -10,9 +10,10 @@
 \usepackage{sectsty}
 \usepackage{lmodern}
 \usepackage{stix}
+\usepackage{tikz}
 \usepackage{listings}
-\usepackage[dvipsnames]{xcolor}
 \usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{titlesec}
 \usepackage{fancyvrb,cprotect}
 \input{revision}
@@ -73,23 +74,30 @@
 \begin{document}
 
 \begin{multicols*}{4}
-
+\begin{tabularx}{\columnwidth}{lX}
+    \raisebox{-\totalheight}{\includegraphics[width=1cm]{heig-vd-black.pdf}} &
 \begin{center}
   {\Large \bf Carte de référence Python 3.x} \\
   HEIG-VD -- version \revision \ -- \revisiondate \\
 \end{center}
-
+\end{tabularx}
+{
+\scriptsize
 Cette carte de référence peut être utilisée durant les travaux écrits
-des cours utilisant \emph{python} à moins que le contraire soit explicitement formulé. Elle est une liste non exhaustive des possibilités du langage Python 3. Ce travail est inspiré de \emph{Learn X in Y}.
+des cours utilisant \emph{python} à moins que le contraire ne soit explicitement formulé par l'enseignant. Cette carte comprend une liste non exhaustive des possibilités du langage Python 3 résumé en une feuille A4 recto-verso. Ce travail est inspiré de \emph{Learn X in Y}.
 
+}
 \section*{Différences entre Python 2.x et Python 3.x}
-
+Python 2 est obsolète depuis le 1er janvier 2020. 
 \begin{lstlisting}
-print('hello') print 'hello'
-2/3 == 0.66    2/3 = 0
-"unicode"      u"unicode"
-range(1,2)     xrange(1,2)
-raise Exception("error") raise "error"
+# Python 3.x                 # Python 2.x
+print('hello')               print 'hello'
+2/3 == 0.66                  2/3 = 0
+"unicode"                    u"unicode"
+range(1,2)                   xrange(1,2)
+raise Exception("error")     raise "error"
+
+from __future__ import print_function
 \end{lstlisting}
 
 \section*{Opérateurs et généralités}
@@ -134,26 +142,25 @@ d = a.copy()      # Autre manière de copier une liste
 \section*{Chaînes de caractères}
 
 \begin{lstlisting}
-"Hello, World!"
-'Hello, World, too!'
+"Hello, World!"        # Guillemets doubles
+'Hello, World, too!'   # Guillemets simples
 """Multi 
-Ligne"""
+Ligne"""               # Aussi utilisé pour la doc
 "Carottes " + "Cuites" # => "Carottes Cuites"
 "A" "B"                # => "AB"
 "Trois" * 3            # => "TroisTroisTrois"
 "Webb"[0]              # => "W"
-"{} et {}".format("Python", "Java") # => "Python et Java"
-"{name} veut manger {eat}"
-    .format(name="Bob", eat="pizza") # => "Bob veut manger pizza"
-name = "Bob"
-"%s %d" % ("Hello", 42) # => "Hello 42"
+"{}!={}".format("Python", "Java") # => "Python!=Java"
+"{name} {eat}".format(name="Bob", eat="pizza") 
+# => "Bob pizza"
 "{1} {0} {0} {1}".format("b", "a") # => "a b b a"
-f"Bonjour {name}!" # => "Bonjour Bob!"
-print("Hello", end="!") # => "Hello!"
-print("Hello", end="") # => "Hello"
-print("Hello") # => "Hello\n"
-print("Error", file=sys.stderr) # => "Error" sur stderr 
-
+name = r"\r\ea"          # Caractères non échappés
+"%s %d" % ("Hello", 42)  # => "Hello 42"
+f"Bonjour {name}!"       # => "Bonjour Bob!"
+print("Hello", end="!")  # => "Hello!"
+print("Hello", )         # => "Hello" sans \n
+print("Hello")           # => "Hello\n"
+print("Error", file=sys.stderr) # sur stderr 
 ','.join(["a", "b", "c"]) # => "a,b,c"
 "foobar".upper() # => "FOOBAR"
 "FOOBAR".lower() # => "foobar"
@@ -181,7 +188,7 @@ a[:2]               # du début à 2
 a[::2]              # Un élément sur 2
 a[::-1]             # Inverse la liste
 del a[0]            # a = [2] (supprime 1)
-b = [4, 5, 6]
+b = [4] + [5, 6]    # b = [4, 5, 6]
 a + b                       # => [1, 2, 3, 4, 5, 6]
 b.extend([8, 9])            # b = [4, 5, 6, 8, 9]
 1 in a                      # => True
@@ -191,19 +198,20 @@ a, b = b, a                 # a = 2, b = 1
 \end{lstlisting}
 
 \section*{Tuples}
-Un tuple est une liste non modifiable.
+Un tuple est une liste non modifiable et donc hashable utilisable comme clé dans un dictionnaire.
 \begin{lstlisting}
 a = (1, 2, 3)  # Nouvelle instance de tuple
 a[0]           # => 1
 a[0] = 42      # TypeError
+hash(a)        # 529344067295497451
 \end{lstlisting}
 
 \section*{Dictionnaires}
-Un dictionnaire est un hashmap, une collection de paires, valeurs 
+Un dictionnaire est un hashmap : une collection de paires, valeurs.
 \begin{lstlisting}
-a = {}              # Nouvelle instance de dict
-a["key"] = "value"
-b = {"key": "value"}        
+a = {}                      # New instance de dict
+a["key"] = "value"          # Ajoute un élément
+b = {"key": "value"}        # ... autre méthode
 invalid = {[1,2]: "value"}  # TypeError
 valid = {(1,2): "value"}    # Ok
 list(a.keys())              # => ["key"]
@@ -238,7 +246,6 @@ elif x > 5:
 else:
     print("x est inférieur ou égal à 5")
 
-# Boucle for
 for animal in ["chat", "chien", "oiseau"]:
     print(f"Un {animal} est un mammifère")
 
@@ -256,11 +263,10 @@ for key in d: print(key) # c b a
 for key in sorted(d): print(key) # a b c
 for key, value in d.items(): print(key, value) # a 3 b 2 c 1
 
-# Boucle while
 i = 0
 while i < 4: print(i += 1) # 1 2 3 4
   
-# Switch (Python >=3.10)
+# Switch (Python >= 3.10)
 status = 400
 match status:
   case 200: print("OK")
@@ -284,33 +290,33 @@ def add(a, b, *args): # Paramètre de type tuple
     return a + b + sum(args)
 
 def display(*args): 
-    for arg in args: print(arg) \# Affiche toutes les valeurs
+    for arg in args: print(arg) 
 
-def display(**kwargs): \# Paramètre de type dictionnaire
+def display(**kwargs): # dict en entrée
     for key, value in kwargs.items(): print(key, value)
 
 def bar(a, b=0, *args, **kwargs):
     print(a, b, args, kwargs) 
-bar(1, 2, 3, c=9, d=(1,2)) \# => 1 2 (3,) {'c': 9, 'd': (1, 2)}
+bar(1, 2, 3, c=9, d=(1,2)) 
+# => 1 2 (3,) {'c': 9, 'd': (1, 2)}
 
-# Fonctions anonymes
-f = lambda x, y: x + y
-f(1, 2) # => 3
+f = lambda x, y: x + y # Fonctions anonymes
+f(1, 2)                # => 3
 def iterate(x, f):
     for i in range(x):
         f(i)
 iterate(3, lambda i: print(i)) # => 0 1 2
 
-(lambda x: x > 2)(3) # => True
+(lambda x: x > 2)(3)                 # => True
 (lambda x, y: x ** 2 + y ** 2)(2, 3) # => 5
 
 x = 0 # Scope global (mauvaise pratique)
 def foo():
-    global x
+    global x                  # ... pas bien.
     x = 42
 foo() # x => 42
 
-def foo(): # Fonctions imbriquées
+def foo():                    # Fonctions imbriquées
     def bar():
         print("bar")
     bar()
@@ -319,9 +325,9 @@ def double_numbers(iterable): # Générateur
 for i in iterable:
     yield i + i
 
-# Annotation de fonction (Python >=3.8)
-def add(x: int, y: int) -> int:
-    return x + y
+# Annotation de fonction (Python >= 3.8)
+def add(x: float, y: int) -> tuple:
+    return (x, y, x + y)
 \end{lstlisting}
 
 \section*{Fichiers}
@@ -335,6 +341,8 @@ with open("file.txt", "r") as fp:
 # t, mode texte (rt, wt, ...)
 # +, mode plus (r+, w+, ...)
 # U, mode UTF-8 (rU, wU, ...)
+
+fp = open("foo.txt", "w") # Mauvaise pratique
 \end{lstlisting}
 
 \section*{Exceptions}
@@ -351,13 +359,15 @@ finally:
 
 \section*{Compréhensions}
 \begin{lstlisting}
-[2 ** x for x in range(5)] # => [1, 2, 4, 8, 16]
-{x for x in range(5)} # => {0, 1, 2, 3, 4}
-{x: x ** 2 for x in range(5)} # => {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+[2 ** x for x in range(5)]    # => [1, 2, 4, 8, 16]
+{x for x in range(5)}         # => {0, 1, 2, 3, 4}
+{x: 5 ** x for x in range(2)} # => {0: 1, 1: 1024}
 [x for x in range(5) if x % 2 == 0] # => [0, 2, 4]
 
 # Générateur sous forme de compréhension      
 values = (-x for x in [1,2,3,4,5])
+
+[(t * 9/5) + 32 for t in ctemps] # C -> F
 \end{lstlisting}
 
 \section*{Math}
@@ -365,13 +375,13 @@ values = (-x for x in [1,2,3,4,5])
 import math
 print(math.sqrt(16)) # => 4.0
 print(math.sin(math.pi / 2)) # => 1.0
-dir(math) # affiche les méthodes disponibles
+math.perm(5, 3) # => 120
 \end{lstlisting}
 
 \section*{Classes}
 \begin{lstlisting}
-class Human:   
-    # Attribut de classe partagé par toutes les instances
+class Human: # Instance de type 
+    # Shared class attribute by all instances
     species = "Homo Sapiens" 
 
     # Initialiseur (appelé à l'instanciation)
@@ -383,32 +393,27 @@ class Human:
         print(f"{self.name}: {msg}")
 
     def sing(self):
-        return 'yo... yo... microphone check... one two... one two...'
+        return 'yo... yo... microphone check...'
         
-    # Partagée par toutes les instances
-    @classmethod
+    @classmethod # Partagée par toutes les instances
     def get_species(cls):
         return cls.species
 
-    # Méthode sans références sur la classe ou l'instance
-    @staticmethod
+    @staticmethod # Méthode sans références
     def grunt():
         print("*grunt*")
 
-    # Getter
-    @property
+    @property     # Getter
     def age(self):
         return self._age
 
-    # Setter 
-    @age.setter
+    @age.setter   # Setter 
     def age(self, value):
         if value < 0:
             raise ValueError("Age non valide")
         self._age = value
 
-    # Suppresseur 
-    @age.deleter
+    @age.deleter # Suppresseur 
     def age(self):
         raise AttributeError("Age non supprimable")
 
@@ -422,26 +427,25 @@ class Human:
     def __len__(self):
         return len(self.name)
 
-# Héritage
-class Supehero(Human):
+class Supehero(Human): # Héritage
     species = "Super Homme"
 
     def __init__(self, name, movie=False,
-        superpowers=["super strength", "bulletproofing"]):
+        superpowers=["strength", "bulletproofing"]):
         self.fictional = True 
         self.movie = movie
         self.superpowers = superpowers
-        super().__init__(name) # Appel du constructeur de la classe parente 
+        super().__init__(name) # Human __init__ 
 
     def sing(self): # Surcharge de sing
         return 'Dun, dun, DUN!'
 
-# Héritage multiple 
-class Batman(Human, Superhero):
+class Batman(Human, Superhero): # Héritage multiple
     def __init__(self, *args, **kwargs):
-        Superhero.__init__(self, 'anonymous', movie=True,
-        superpowers=['Wealthy'], *args, **kwargs)
-        Bat.__init__(self, *args, can_fly=False, **kwargs)
+        Superhero.__init__(self, None, movie=True,
+            superpowers=['Wealthy'], *args, **kwargs)
+        Bat.__init__(self, *args, can_fly=False, 
+            **kwargs)
 
         # override the value for the name attribute
         self.name = 'Sad Affleck'
@@ -450,7 +454,6 @@ class Batman(Human, Superhero):
 \section*{Décorateurs}
 \begin{lstlisting}
 from functools import wraps
-
 def beg(target_function):
     @wraps(target_function)
     def wrapper(*args, **kwargs):
@@ -458,7 +461,6 @@ def beg(target_function):
         if say_please:
             return "{} {}".format(msg, "Please! I am poor :(")
         return msg
-
     return wrapper
 
 @beg
@@ -467,26 +469,26 @@ def say(say_please=False):
     return msg, say_please
 
 print(say())                 # Can you buy me a beer?
-print(say(say_please=True))  # Can you buy me a beer? Please! I am poor :(
+print(say(say_please=True))  # Please! I am poor :(
 \end{lstlisting}
 
 \section*{Loggeur et traceurs}
 \begin{lstlisting}
 import logging
-logging.warning('Watch out!')  # Message sur la console
+logging.warning('Watch out!')  # Sur la console
 logging.info('I told you so')  # N'affiche rien 
 
-logging.basicConfig(
-    filename='example.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='example.log', 
+    encoding='utf-8', level=logging.DEBUG)
 logging.debug('Un message')
 
-logger = logging.getLogger(__name__) # Création d'un logger
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) 
 
-formatter = logging.Formatter(
-  '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(name)s'
+    ' - %(levelname)s - %(message)s')
 logger.setFormatter(formatter)
-logger.addHandler(logging.StreamHandler()) # Affiche sur la console
+logger.addHandler(logging.StreamHandler()) 
 
 \end{lstlisting}
 
@@ -498,15 +500,27 @@ def __call__(cls, *args, **kwargs):
     if cls not in cls._instances:
         cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
     return cls._instances[cls]
-
 class MyClass(BaseClass, metaclass=Singleton):
     pass
 \end{lstlisting}
 
+\section*{Opérations sur les listes}
+\begin{lstlisting}
+enumerate(liste) # Renvoie un tuple (index, element)
+list(enumerate(liste)) # Renvoie une liste de tuples
+zip([1,2,3], [4,5,6]) # => [(1, 4), (2, 5), (3, 6)]
+u = enumerate(zip([1,2,3], [4,5,6])) 
+# => [(0, (1, 4)), (1, (2, 5)), (2, (3, 6))]
+for i, (x, y) in u:
+    print(i, x, y)
+
+filter(lambda x: x % 2 == 0, [1,2,3,4,5]) # => [2, 4]
+\end{lstlisting}
+
 \section*{Import et modules}
 \begin{lstlisting}
-from math import sqrt 
-from math import *     # Mauvaise pratique
+from math import sqrt, prod  # Bonne pratique
+from math import *           # Mauvaise pratique
 
 # Comportement par défaut à l'appel du script
 if __name__ == '__main__':
@@ -515,23 +529,23 @@ if __name__ == '__main__':
 
 \section*{Modules}
 \begin{description}
-\item[beautifulsoup4] bibliothèque pour manipuler des pages web
+\item[beautifulsoup4] pour manipuler des pages web
 \item[flask] framework pour créer des applications web
-\item[functools] bibliothèque pour manipuler des fonctions
-\item[itertools] bibliothèque pour manipuler des itérateurs
+\item[functools] pour manipuler des fonctions
+\item[itertools] pour manipuler des itérateurs
 \item[jinja] moteur de template
-\item[matplotlib] bibliothèque pour créer des graphiques
-\item[numpy] bibliothèque pour manipuler des tableaux
-\item[opencv] bibliothèque pour manipuler des images
-\item[pandas] bibliothèque pour manipuler des données
-\item[pillow] bibliothèque pour manipuler des images
-\item[pint] bibliothèque pour manipuler des unités
-\item[pytest] bibliothèque pour tester des applications 
-\item[requests] bibliothèque pour manipuler des requêtes HTTP
-\item[scipy] bibliothèque pour manipuler des fonctions mathématiques
-\item[seaborn] bibliothèque pour manipuler des graphiques
-\item[yaml] bibliothèque pour manipuler des fichiers YAML
-\item[json] bibliothèque pour manipuler des fichiers JSON
+\item[matplotlib] pour créer des graphiques
+\item[numpy] pour manipuler des tableaux
+\item[opencv] pour manipuler des images
+\item[pandas] pour manipuler des données
+\item[pillow] pour manipuler des images
+\item[pint] pour manipuler des unités
+\item[pytest] pour tester des applications 
+\item[requests] pour manipuler des requêtes HTTP
+\item[scipy] pour manipuler des fonctions mathématiques
+\item[seaborn] pour manipuler des graphiques
+\item[yaml] pour manipuler des fichiers YAML
+\item[json] pour manipuler des fichiers JSON
 \end{description}
 
 \subsection*{Numpy}
@@ -542,21 +556,14 @@ if __name__ == '__main__':
 array([[ 0,  1,  2,  3,  4],
        [ 5,  6,  7,  8,  9],
        [10, 11, 12, 13, 14]])
->>> a.shape
-(3, 5)
->>> a.ndim
-2
->>> a.dtype.name
-'int64'
->>> a.itemsize
-8
->>> a.size
-15
->>> type(a)
-<class 'numpy.ndarray'>
->>> np.array([6, 7, 8]) * 2
-array([12, 14, 16])
->>> np.zeros((3, 5))
+>>> a.shape                 # (3, 5)
+>>> a.ndim                  # 2
+>>> a.dtype.name            # 'int64'
+>>> a.itemsize              # 8
+>>> a.size                  # 15
+>>> type(a)                 # <class 'numpy.ndarray'>
+>>> np.array([6, 7, 8]) * 2 # array([12, 14, 16])
+>>> np.zeros((3, 5))        # None
 >>> np.zeros((3, 5), dtype=np.int16)
 array([[0, 0, 0, 0, 0],
        [0, 0, 0, 0, 0],
@@ -585,6 +592,21 @@ import functools
 @cache
 def factorial(n):
     return n * factorial(n-1) if n else 1
+
+reduce(lambda x, y: x * y, [1, 2, 3, 4, 5]) # => 120
+import operator 
+functools.reduce(operator.mul, [1, 2, 3])   # => 6
+\end{lstlisting}
+
+\subsection*{Itertools}
+\begin{lstlisting}
+chain(*[range(3), range(3)]) # => 0, 1, 2, 0, 1, 2
+combinations('ABCD', 2) # => AB AC AD BC BD CD
+product('ABCD', 'xy') # => Ax Ay Bx By Cx Cy Dx Dy
+permutations('ABCD', 2) 
+# => AB AC AD BA BC BD CA CB CD DA DB DC
+combinations_with_replacement('ABCD', 2) 
+# => AA AB AC AD BB BC BD CC CD DD
 \end{lstlisting}
 
 \subsection*{Collections}
@@ -612,7 +634,8 @@ class DefaultDict(Mapping):
 import re 
 re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
 ['foot', 'fell', 'fastest']
-
+re.split(r'\s*', 'a b c  d') # ['a', 'b', 'c', 'd']
+re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
 \end{lstlisting}
 
 
