@@ -40,22 +40,17 @@
   showtabs=true,
   tabsize=3,
   columns=fullflexible,
+  aboveskip=0pt,
+  belowskip=0pt
 }
 
 % Configuration
 \renewcommand{\familydefault}{\sfdefault}
 
-\sectionfont{\fontsize{12}{15}\selectfont}
-\subsectionfont{\fontsize{10}{12}\selectfont}
-
-\allsectionsfont{\sffamily\underline}
+\allsectionsfont{\sffamily}
 
 % No pages numbering
 \pagenumbering{gobble}
-
-% Titles and paragraphs more compact
-\titlespacing*{\section}{0pt}{0pt}{0pt}
-\titlespacing*{\subsection}{0pt}{0pt}{0pt}
 
 \newlength\mybaselinestretch
 \mybaselinestretch=0pt plus 0.02pt\relax
@@ -71,6 +66,11 @@
 \newcommand{\any}{$\hzigzag$~}
 \newcommand{\spc}{$\mathvisiblespace$}
 \newcommand{\cd}{\lstinline}
+
+% Titles and paragraphs more compact
+% \titlespacing*{\section}{0pt}{1em}{0pt}
+% \titlespacing*{\subsection}{0pt}{1em}{0pt}
+
 
 \begin{document}
 
@@ -219,6 +219,8 @@ list(a.values())            # => ["value"]
 a['oops']                   # KeyError
 a.get("oops")               # => None
 a.get("oops", "default")    # => "default"
+u = {'bob': 42, 'alice': 43}
+u.items() # => dict_item([('bob', 42), ('alice', 43)])
 \end{lstlisting}
 
 \section*{Sets}
@@ -229,10 +231,10 @@ a.add(1)       # a = {1}
 a.add(2)       # a = {1, 2}
 a.add(2)       # a = {1, 2} Déjà dans a
 b = {2, 5, 7}  # Nouvelle instance de set
-a.union(b)     # a = {1, 2, 5, 7}
-a & b          # a = {2} Intersection
-a | b          # a = {1, 2, 5, 7} Union
-a - b          # a = {1} Différence
+a.union(b)     # => {1, 2, 5, 7}
+a & b          # => {2} Intersection
+a | b          # => {1, 2, 5, 7} Union
+a - b          # => {1} Différence
 1 in a         # => False
 \end{lstlisting}
 
@@ -261,10 +263,9 @@ for i, animal in enumerate(animaux):
 d = {"c": 1, "b": 2, "a": 3}
 for key in d: print(key) # c b a
 for key in sorted(d): print(key) # a b c
-for key, value in d.items(): print(key, value) # a 3 b 2 c 1
-
+for k, v in d.items(): print(k, v) # a 3 b 2 c 1
 i = 0
-while i < 4: print(i += 1) # 1 2 3 4
+while i < 4: print(i := i + 1) # 1 2 3 4
   
 # Switch (Python >= 3.10)
 status = 400
@@ -272,6 +273,7 @@ match status:
   case 200: print("OK")
   case 400: print("Bad Request")  
   case 404: print("Not Found")
+  case k 
   case _: print("Status inconnu") # Default      
 \end{lstlisting}
 
@@ -341,7 +343,6 @@ with open("file.txt", "r") as fp:
 # t, mode texte (rt, wt, ...)
 # +, mode plus (r+, w+, ...)
 # U, mode UTF-8 (rU, wU, ...)
-
 fp = open("foo.txt", "w") # Mauvaise pratique
 \end{lstlisting}
 
@@ -358,24 +359,26 @@ finally:
 \end{lstlisting}
 
 \section*{Compréhensions}
-\begin{lstlisting}
+\begin{lstlisting}[mathescape]
 [2 ** x for x in range(5)]    # => [1, 2, 4, 8, 16]
 {x for x in range(5)}         # => {0, 1, 2, 3, 4}
-{x: 5 ** x for x in range(2)} # => {0: 1, 1: 1024}
+{x: 5 ** x for x in range(2)} # => {0: 1, 1: 5}
 [x for x in range(5) if x % 2 == 0] # => [0, 2, 4]
 
 # Générateur sous forme de compréhension      
 values = (-x for x in [1,2,3,4,5])
 
-[(t * 9/5) + 32 for t in ctemps] # C -> F
+[(temp * 9/5) + 32 for temp in ctemps] # ${^\circ}$C -> ${^\circ}$F
 \end{lstlisting}
 
 \section*{Math}
 \begin{lstlisting}
 import math
-print(math.sqrt(16)) # => 4.0
-print(math.sin(math.pi / 2)) # => 1.0
-math.perm(5, 3) # => 120
+math.sqrt(16)         # => 4.0
+math.sin(math.pi / 2) # => 1.0
+math.perm(5, 3)       # => 120
+math.factorial(25)    # => 15511210043330985984000000 
+math.gcd(3912, 4830)  # => 6
 \end{lstlisting}
 
 \section*{Classes}
@@ -388,42 +391,32 @@ class Human: # Instance de type
     def __init__(self, name):
         self.name = name # Propriété publique
         self._age = 0 # Propriété cachée
-    
     def say(self, msg):
         print(f"{self.name}: {msg}")
-
     def sing(self):
-        return 'yo... yo... microphone check...'
-        
+        return 'yo... yo... microphone check...'  
     @classmethod # Partagée par toutes les instances
     def get_species(cls):
         return cls.species
-
     @staticmethod # Méthode sans références
     def grunt():
         print("*grunt*")
-
     @property     # Getter
     def age(self):
         return self._age
-
     @age.setter   # Setter 
     def age(self, value):
         if value < 0:
             raise ValueError("Age non valide")
         self._age = value
-
     @age.deleter # Suppresseur 
     def age(self):
         raise AttributeError("Age non supprimable")
-
     # Methodes magiques
     def __str__(self):
         return f"{self.name} ({self.age})"
-    
     def __repr__(self):
         return f"Human('{self.name}', {self.age})"
-    
     def __len__(self):
         return len(self.name)
 
@@ -544,8 +537,8 @@ if __name__ == '__main__':
 \item[requests] pour manipuler des requêtes HTTP
 \item[scipy] pour manipuler des fonctions mathématiques
 \item[seaborn] pour manipuler des graphiques
-\item[yaml] pour manipuler des fichiers YAML
-\item[json] pour manipuler des fichiers JSON
+\item[pickle, yaml, json] pour manipuler des fichiers sérialisés
+\item[click] pour des interfaces en ligne de commande 
 \end{description}
 
 \subsection*{Numpy}
@@ -571,8 +564,8 @@ array([[0, 0, 0, 0, 0],
 >>> np.array([[1, 2], [3, 4]], dtype=complex)
 array([[1.+0.j, 2.+0.j],
        [3.+0.j, 4.+0.j]])
->>> np.linspace(0, 2, 9)
-array([0. , 0.2, 0.4, 0.6, 0.8, 1. , 1.2, 1.4, 1.6])
+>>> np.linspace(0, 2, 6)
+array([0. , 0.4, 0.8, 1.2, 1.6, 2. ])
 \end{lstlisting}
 
 \subsection*{Matplotlib}
@@ -629,6 +622,17 @@ class DefaultDict(Mapping):
         return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)
 \end{lstlisting}
 
+\subsection*{Click}
+\begin{lstlisting}
+@click.command
+@click.option('--name', prompt='Your name', help='')
+@click.option('--age', prompt='Your age', help='')
+def hello(name, age):
+    click.echo('Hello %s!' % name)
+    click.echo('You are %s years old.' % age)
+hello() 
+\end{lstlisting}
+
 \subsection*{Expressions régulières}
 \begin{lstlisting}
 import re 
@@ -638,6 +642,13 @@ re.split(r'\s*', 'a b c  d') # ['a', 'b', 'c', 'd']
 re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
 \end{lstlisting}
 
+\subsection*{PEP (Python Enhancement Proposals)}
+\begin{description}
+    \item[PEP 8] Formattage du code Python
+    \item[PEP 20] Zen of Python 
+    \item[PEP 257] Docstring Conventions (commentaires)
+    \item[PEP 622] Structural Pattern Matching (match/case)  
+\end{description}
 
 \end{multicols*}
 
