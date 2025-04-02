@@ -180,7 +180,7 @@ len(a)              # => 0
 a.append(1)         # a = [1]
 a.append(2)         # a = [1, 2]
 a.append(3, 4)      # a = [1, 2, 3, 4]
-a.pop()             # a = [4], retourne 3
+a.pop()             # a = [1, 2, 3], retourne 4
 a[0]                # => 1
 a[-1]               # => 3 (en partant de la fin)
 a[42]               # => IndexError
@@ -190,11 +190,11 @@ a[0:]               # de 0 à la fin
 a[:2]               # du début à 2
 a[::2]              # Un élément sur 2
 a[::-1]             # Inverse la liste
-del a[0]            # a = [2] (supprime 1)
+del a[0]            # a = [2, 3] (supprime 1)
 b = [4] + [5, 6]    # b = [4, 5, 6]
 a + b               # => [1, 2, 3, 4, 5, 6]
 b.extend([8, 9])    # b = [4, 5, 6, 8, 9]
-1 in a              # => True
+1 in a              # => False
 a, b, c = [1, 2, 3] # a = 1, b = 2, c = 3
 a, b = b, a         # a = 2, b = 1
 a = [1, 3.15, "Hu", [1, 2]] # Liste composite
