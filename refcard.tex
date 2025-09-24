@@ -1,14 +1,15 @@
-\documentclass{article}
+%\documentclass{article}
+\documentclass[9pt]{extarticle}
 
-\usepackage[a4paper, landscape, margin=1cm]{geometry}
+\usepackage[a4paper, landscape, margin=0.5cm]{geometry}
 \usepackage{fontspec}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[french]{babel}
-\usepackage[fontsize=6.5pt]{scrextend}
+%\usepackage[fontsize=6.5pt]{scrextend}
 \usepackage[T1]{fontenc}
 \usepackage{multicol}
 \usepackage{tabularx}
-\usepackage{sectsty}
+%\usepackage{sectsty}
 \usepackage{lmodern}
 \usepackage{stix}
 \usepackage{listings}
@@ -47,7 +48,7 @@
 % Configuration
 \renewcommand{\familydefault}{\sfdefault}
 
-\allsectionsfont{\sffamily}
+%\allsectionsfont{\sffamily}
 
 % No pages numbering
 \pagenumbering{gobble}
@@ -113,20 +114,32 @@ True and False or False # => False
 0 == False              # => True
 1 != 1                  # => False (Inégalités)
 1 < 2 < 3               # => True (Chaînage)
-None                    # Un objet de type None
 "etc" is None           # => False
 None is None            # => True
 bool(0)                 # => False
 bool("")                # => False
 \end{lstlisting}
-\section*{Conteneurs}
+
+\section*{Types de données de base}
+
+\begin{tabularx}{\columnwidth}{llX}
+    Entier & \texttt{42, int(42)} & Entier illimité en taille \\
+    Flottant & \texttt{3.14, float(3.14)} & Précision 52-bit \\
+    Complexe & \texttt{3 + 4j} & Partie réelle et imaginaire \\
+    Booléen & \texttt{True, False} & Sous-type d'entier \\
+    Chaîne & \texttt{"Hello"} & Suite de caractères Unicode \\
+    None & \texttt{None} & Objet spécial, valeur nulle \\
+    Ellipsis & \texttt{...} & Objet spécial, valeur incomplète \\
+\end{tabularx}
+
+\section*{Type de conteneurs}
 
 \begin{tabularx}{\columnwidth}{llX}
 Liste & \texttt{[1, 2, 3]} & Modifiable, ordonnée, indexée \\
 Tuple & \texttt{(1, 2, 3)} & Non modifiable, ordonnée, indexée \\
 Dict & \texttt{\{1: "a", 2: "b"\}} & Modifiable, non ordonné, indexé \\
 Set & \texttt{\{1, 2, 3\}} & Modifiable, non ordonné, non indexé \\
-
+Slice & \texttt{slice(0, 10, 2)} & Objet de découpage \\
 \end{tabularx}
 
 \section*{Initialisations}
