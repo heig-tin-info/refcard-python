@@ -159,7 +159,26 @@ Ligne"""               # Utilisé pour le docstring
 "{1} {0} {0} {1}".format("b", "a") # => "a b b a"
 name = r"\r\ea"          # Caractères non échappés
 "%s %d" % ("Hello", 42)  # => "Hello 42"
+
+# F-strings (Python >= 3.6)
+name = "Bob"
+age = 25
 f"Bonjour {name}!"       # => "Bonjour Bob!"
+f"{name=}"               # => "name='Bob'" (Python >= 3.8)
+f"{age=:>3}"             # => "age= 25" (Python >= 3.8)
+f"{1234.5678:.2f}"       # => "1234.57" (formatage)
+f"{1234567:,}"           # => "1,234,567" (séparateurs)
+f"{{not a variable}}"    # => "{not a variable}" (échappement)
+
+# F-strings multilignes et expressions
+f"""Nom: {name}
+Age: {age}
+Majeur: {'Oui' if age >= 18 else 'Non'}"""
+
+# F-strings avec format date
+from datetime import datetime
+now = datetime.now()
+f"{now:%Y-%m-%d %H:%M}"  # => "2023-10-15 14:30"
 print("Hello", end="!")  # => "Hello!"
 print("Hello", )         # => "Hello" sans \n
 print("Hello")           # => "Hello\n"
@@ -270,14 +289,50 @@ for k, v in d.items(): print(k, v) # a 3 b 2 c 1
 i = 0
 while i < 4: print(i := i + 1) # 1 2 3 4
 
+# Walrus operator := (Python >= 3.8) - plus d'exemples
+if (n := len(data)) > 10:
+    print(f"Liste longue: {n} éléments")
+
+# Avec list comprehension
+squares = [y for x in range(10) if (y := x**2) > 20]
+
+# Dans while loop
+while (line := input(">>> ")) != "quit":
+    print(f"Vous avez dit: {line}")
+
 # Switch (Python >= 3.10)
 status = 400
 match status:
   case 200: print("OK")
   case 400: print("Bad Request")
   case 404: print("Not Found")
-  case k
   case _: print("Status inconnu") # Default
+
+# Pattern matching avancé
+point = (0, 1)
+match point:
+    case (0, 0):
+        print("Origine")
+    case (0, y):
+        print(f"Sur l'axe Y: {y}")
+    case (x, 0):
+        print(f"Sur l'axe X: {x}")
+    case (x, y):
+        print(f"Point: {x}, {y}")
+
+# Avec classes et conditions
+class Point:
+    def __init__(self, x, y): self.x, self.y = x, y
+
+match Point(1, 2):
+    case Point(x=0, y=0):
+        print("Origine")
+    case Point(x=0, y=y):
+        print(f"Y-axis: {y}")
+    case Point(x=x, y=y) if x == y:
+        print(f"Diagonale: {x}")
+    case Point(x=x, y=y):
+        print(f"Point: ({x}, {y})")
 \end{lstlisting}
 
 \section*{Fonctions}
@@ -333,6 +388,30 @@ for i in iterable:
 # Annotation de fonction (Python >= 3.8)
 def add(x: float, y: int) -> tuple:
     return (x, y, x + y)
+
+# Types Union (Python >= 3.10)
+def process(value: int | str | None) -> str:
+    match value:
+        case int():
+            return f"Nombre: {value}"
+        case str():
+            return f"Texte: {value}"
+        case None:
+            return "Aucune valeur"
+
+# Avant Python 3.10 (avec typing)
+from typing import Union, Optional, List
+def old_style(value: Union[int, str]) -> Optional[List[str]]:
+    pass
+
+# Paramètres positionnels uniquement (Python >= 3.8)
+def add(a, b, /, c=0):  # a,b sont positionnels uniquement
+    return a + b + c
+
+add(1, 2)     # OK
+add(1, 2, 3)  # OK  
+add(1, 2, c=3)  # OK
+add(a=1, b=2)   # TypeError
 \end{lstlisting}
 
 \section*{Fichiers}
@@ -349,6 +428,35 @@ with open("file.txt", "r") as fp:
 fp = open("foo.txt", "w") # Mauvaise pratique
 \end{lstlisting}
 
+\section*{Pathlib (chemins modernes)}
+\begin{lstlisting}
+from pathlib import Path
+
+# Création de chemins
+p = Path("documents") / "file.txt"  # documents/file.txt
+p = Path.home() / "Documents"       # /Users/name/Documents
+p = Path.cwd()                      # Répertoire courant
+
+# Propriétés du chemin
+p.name          # "file.txt"
+p.stem          # "file" (sans extension)
+p.suffix        # ".txt"
+p.parent        # Path("documents")
+p.parts         # ('documents', 'file.txt')
+
+# Tests
+p.exists()      # True/False
+p.is_file()     # True/False
+p.is_dir()      # True/False
+
+# Opérations
+p.mkdir(parents=True, exist_ok=True)  # Créer répertoire
+p.touch()                             # Créer fichier vide
+list(p.glob("*.py"))                  # Chercher fichiers Python
+p.read_text()                         # Lire contenu
+p.write_text("content")               # Écrire contenu
+\end{lstlisting}
+
 \section*{Exceptions}
 \begin{lstlisting}
 try:
@@ -359,6 +467,40 @@ else:
     # Code exécuté en cas de succès
 finally:
     # Code exécuté quelque soit le résultat
+\end{lstlisting}
+
+\section*{Context Managers}
+\begin{lstlisting}
+# Avec with statement (automatique cleanup)
+with open("file.txt") as f:
+    content = f.read()  # Fichier fermé automatiquement
+
+# Context manager multiple
+with open("in.txt") as infile, open("out.txt", "w") as outfile:
+    outfile.write(infile.read())
+
+# Créer un context manager
+from contextlib import contextmanager
+
+@contextmanager
+def managed_resource():
+    print("Acquisition")
+    try:
+        yield "resource"
+    finally:
+        print("Libération")
+
+with managed_resource() as resource:
+    print(f"Utilisation de {resource}")
+
+# Context manager avec classe
+class ManagedResource:
+    def __enter__(self):
+        print("Setup")
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Cleanup")
+        return False  # Ne supprime pas l'exception
 \end{lstlisting}
 
 \section*{Compréhensions}
@@ -445,6 +587,77 @@ class Batman(Human, Superhero): # Héritage multiple
 
         # override the value for the name attribute
         self.name = 'Sad Affleck'
+\end{lstlisting}
+
+\section*{Programmation asynchrone}
+\begin{lstlisting}
+import asyncio
+
+# Fonction asynchrone
+async def fetch_data(url):
+    await asyncio.sleep(1)  # Simulation d'une opération I/O
+    return f"Data from {url}"
+
+async def main():
+    # Exécution séquentielle
+    result1 = await fetch_data("url1")
+    result2 = await fetch_data("url2")
+    
+    # Exécution concurrent
+    results = await asyncio.gather(
+        fetch_data("url1"),
+        fetch_data("url2")
+    )
+    
+    # Créer une tâche
+    task = asyncio.create_task(fetch_data("url3"))
+    result = await task
+
+# Exécuter le code asynchrone
+asyncio.run(main())
+
+# Context manager asynchrone
+class AsyncResource:
+    async def __aenter__(self):
+        print("Acquisition ressource")
+        return self
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        print("Libération ressource")
+
+async def use_resource():
+    async with AsyncResource() as resource:
+        await asyncio.sleep(1)
+\end{lstlisting}
+
+\section*{Dataclasses (Python >= 3.7)}
+\begin{lstlisting}
+from dataclasses import dataclass, field
+from typing import List
+
+@dataclass
+class Person:
+    name: str
+    age: int = 0
+    skills: List[str] = field(default_factory=list)
+    
+    def __post_init__(self):
+        if self.age < 0:
+            self.age = 0
+
+# Utilisation
+p = Person("Alice", 30, ["Python", "JavaScript"])
+print(p)  # Person(name='Alice', age=30, skills=['Python', 'JavaScript'])
+
+# Autres options de dataclass
+@dataclass(frozen=True)  # Immutable
+class Point:
+    x: float
+    y: float
+
+@dataclass(order=True)   # Permet comparaisons <, >, etc.
+class Student:
+    grade: float
+    name: str = field(compare=False)  # Exclu de la comparaison
 \end{lstlisting}
 
 \section*{Décorateurs}
@@ -626,7 +839,9 @@ re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
 
 \section*{Modules}
 \begin{description}
+\item[asyncio] programmation asynchrone
 \item[beautifulsoup4] pour manipuler des pages web
+\item[dataclasses] pour créer des classes avec moins de code
 \item[flask] framework pour créer des applications web
 \item[functools] pour manipuler des fonctions
 \item[itertools] pour manipuler des itérateurs
@@ -635,12 +850,15 @@ re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
 \item[numpy] pour manipuler des tableaux
 \item[opencv] pour manipuler des images
 \item[pandas] pour manipuler des données
+\item[pathlib] pour manipuler des chemins de fichiers
 \item[pillow] pour manipuler des images
 \item[pint] pour manipuler des unités
+\item[pydantic] validation de données avec types
 \item[pytest] pour tester des applications
 \item[requests] pour manipuler des requêtes HTTP
 \item[scipy] pour manipuler des fonctions mathématiques
 \item[seaborn] pour manipuler des graphiques
+\item[typing] pour les annotations de types
 \item[pickle, yaml, json] pour manipuler des fichiers sérialisés
 \item[click] pour des interfaces en ligne de commande
 \end{description}
@@ -650,9 +868,16 @@ re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
     \item[PEP 8] Formattage du code Python
     \item[PEP 20] Zen of Python
     \item[PEP 257] Docstring Conventions (commentaires)
+    \item[PEP 484] Type Hints (annotations de types)
+    \item[PEP 526] Variable Annotations
+    \item[PEP 570] Positional-Only Parameters
+    \item[PEP 572] Assignment Expressions (walrus operator :=)
+    \item[PEP 585] Type Hinting Generics
+    \item[PEP 604] Union Operators (X | Y)
     \item[PEP 622] Structural Pattern Matching (match/case)
-    \item[PEP 695] Syntaxe du type hinting
-    \item[PEP 701] Syntaxe des fstrings
+    \item[PEP 634] Specification Pattern Matching
+    \item[PEP 695] Type Parameter Syntax
+    \item[PEP 701] Syntaxe des f-strings
 \end{description}
 
 \end{multicols*}
