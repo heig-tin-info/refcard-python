@@ -1,65 +1,72 @@
+name: CI
+
 on:
   push:
-    branches:
-      - master
-      - main
-  create:
-    tags:
+    branches: [ master, main ]
+    tags: [ 'v*' ]   # <— au lieu de on.create
+#  create:
+#    tags:          # ❌ supprime ça
+
 jobs:
   build:
-    name: Build Project
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0 # To get all tags
+          fetch-depth: 0   # on veut les tags
+
       - name: work around permission issue
         run: git config --global --add safe.directory /srv
+
       - name: Create revision
-        run: make revision.tex
+        run: |
+            set -eo pipefail
+            git fetch --force --tags --prune
+            make revision.tex
+
       - name: Build docker images
         run: docker build . -t local -f .devcontainer/Dockerfile
+
       - name: Build
-        run: docker run -v $GITHUB_WORKSPACE:/srv -w/srv local make
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Update preview
-      - name: Upload refcard
+        run: docker run -v "$GITHUB_WORKSPACE":/srv -w /srv local make
+
+      - name: Upload refcard.pdf
         uses: actions/upload-artifact@v4
         with:
-          name: pdf
+          name: refcard
           path: refcard.pdf
           if-no-files-found: error
+
+      - name: Upload preview.png
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview
+          path: preview.png
+          if-no-files-found: error
+
   release:
-    name: Create Release
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
     steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Download refcard
+        uses: actions/download-artifact@v4
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Download artifacts
-        uses: actions/download-artifact@v5
-        with:
-          name: pdf
+          name: refcard
           path: dist
-      - name: Upload Refcard
-        id: upload-pdf-refcard
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download preview
+        uses: actions/download-artifact@v4
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/refcard.pdf
-          asset_name: refcard.pdf
-          asset_content_type: application/pdf
+          name: preview
+          path: dist
+
+      - name: Create/Update Release with assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/refcard.pdf
+            dist/preview.png
+          generate_release_notes: true

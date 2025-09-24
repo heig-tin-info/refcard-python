@@ -1,15 +1,14 @@
-%\documentclass{article}
-\documentclass[9pt]{extarticle}
+\documentclass{article}
 
 \usepackage[a4paper, landscape, margin=0.5cm]{geometry}
 \usepackage{fontspec}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[french]{babel}
-%\usepackage[fontsize=6.5pt]{scrextend}
+\usepackage[fontsize=6.5pt]{scrextend}
 \usepackage[T1]{fontenc}
 \usepackage{multicol}
 \usepackage{tabularx}
-%\usepackage{sectsty}
+\usepackage{sectsty}
 \usepackage{lmodern}
 \usepackage{stix}
 \usepackage{listings}
@@ -48,7 +47,7 @@
 % Configuration
 \renewcommand{\familydefault}{\sfdefault}
 
-%\allsectionsfont{\sffamily}
+\allsectionsfont{\sffamily}
 
 % No pages numbering
 \pagenumbering{gobble}
@@ -89,35 +88,25 @@ Cette carte de référence peut être utilisée durant les travaux écrits
 des cours utilisant \emph{python} à moins que le contraire ne soit explicitement formulé par l'enseignant. Cette carte comprend une liste non exhaustive des possibilités du langage Python 3 résumé en une feuille A4 recto-verso. Ce document est en partie inspiré de \emph{Learn X in Y}.
 
 }
-\section*{Différences entre Python 2.x et Python 3.x}
-Python 2 est obsolète depuis le 1er janvier 2020.
-\begin{lstlisting}
-# Python 3.x                 # Python 2.x
-print('hello')               print 'hello'
-2/3 == 0.66                  2/3 = 0
-"unicode"                    u"unicode"
-range(1,2)                   xrange(1,2)
-raise Exception("error")     raise "error"
+% \section*{Différences entre Python 2.x et Python 3.x}
+% Python 2 est obsolète depuis le 1er janvier 2020.
+% \begin{lstlisting}
+% # Python 3.x                 # Python 2.x
+% print('hello')               print 'hello'
+% 2/3 == 0.66                  2/3 = 0
+% "unicode"                    u"unicode"
+% range(1,2)                   xrange(1,2)
+% raise Exception("error")     raise "error"
 
-from __future__ import print_function
-\end{lstlisting}
+% from __future__ import print_function
+% \end{lstlisting}
 
-\section*{Opérateurs et généralités}
+\section*{Opérateurs}
 
 \begin{lstlisting}
 5.0 // 3                # => 1.0 Division entière
-7 % 3                   # => 1 Modulo
-2 ** 4                  # => 16 Exponentation
-not True == False       # => True (Valeurs booléeenes)
-True and False or False # => False
-0 and 2                 # => 0 (Op. logiques sur int)
-0 == False              # => True
-1 != 1                  # => False (Inégalités)
-1 < 2 < 3               # => True (Chaînage)
-"etc" is None           # => False
-None is None            # => True
-bool(0)                 # => False
-bool("")                # => False
+7 % 3                   # => 1 Modulo (reste)
+2 ** 4                  # => 16 Exponentation $2^4$
 \end{lstlisting}
 
 \section*{Types de données de base}
@@ -129,7 +118,7 @@ bool("")                # => False
     Booléen & \texttt{True, False} & Sous-type d'entier \\
     Chaîne & \texttt{"Hello"} & Suite de caractères Unicode \\
     None & \texttt{None} & Objet spécial, valeur nulle \\
-    Ellipsis & \texttt{...} & Objet spécial, valeur incomplète \\
+    Ellipse & \texttt{...} & Objet spécial, valeur incomplète \\
 \end{tabularx}
 
 \section*{Type de conteneurs}
@@ -142,47 +131,51 @@ Set & \texttt{\{1, 2, 3\}} & Modifiable, non ordonné, non indexé \\
 Slice & \texttt{slice(0, 10, 2)} & Objet de découpage \\
 \end{tabularx}
 
-\section*{Initialisations}
+\section*{Comparaisons et logiques}
 
 \begin{lstlisting}
-i = 42 + 2j       # Init une variable complexe
-type(i)           # => <class 'complex'>
-a = [1, 2, 3, 4]  # Nouvelle instance de liste
-b = a             # Référence vers la même liste
-b is a            # => True (b pointe sur a)
-b == a            # => True (objets a et b égaux)
-c = a[:]          # Copie de la liste
-c is a            # => False (c pas référence sur a)
-d = a.copy()      # Autre manière de copier une liste
+a = b = [1, 2, 3, 4] # Deux variables sur même liste
+b is a               # => True (a pointe sur b)
+b == a               # => True (objets a et b égaux)
+c = a[:]             # Force copie de la liste
+c is a               # => False (c pas référence sur a)
+not True == False    # => True (Valeurs booléeenes)
+0 and 2              # => 0 (Op. logiques sur int)
+0 == False           # => True
+1 != 1               # => False (Inégalités)
+1 < 2 < 3            # => True (Chaînage)
+"etc" is None        # => False
+None is None         # => True
 \end{lstlisting}
 
 \section*{Chaînes de caractères}
 
 \begin{lstlisting}
-"Hello, World!"        # Guillemets doubles
-'Hello, World, too!'   # Guillemets simples
-"""Multi
-Ligne"""               # Utilisé pour le docstring
-"Carottes " + "Cuites" # => "Carottes Cuites"
-"A" "B"                # => "AB"
-"Trois" * 3            # => "TroisTroisTrois"
-"Webb"[0]              # => "W"
+"Hello, World!"          # Guillemets doubles
+'Hello, World, too!'     # Guillemets simples
+"""Multi Ligne"""        # Chaîne multilignes
+"Carottes " + "Cuites"   # => "Carottes Cuites"
+"A" "B"                  # => "AB" (attention piège)
+"Bip" * 3                # => "BipBipBip"
+"Webb"[0]                # => "W"
+r"\r\ea"                 # Chaîne brute (raw)
+name = "Bob", age = 25
+f"Bonjour {name}!"       # => "Bonjour Bob!"
+f"{name=}"               # => "name='Bob'" (Py >= 3.8)
+f"{age=:>3}"             # => "age= 25" (Python >= 3.8)
+f"{1234.5678:.2f}"       # => "1234.57" (formatage)
+f"{1234567:,}"           # => "1,234,567" (séparateurs)
 "{}!={}".format("Python", "Java") # => "Python!=Java"
 "{a} {b}".format(a="foo", b="bar") # => "foo bar"
-"{1} {0} {0} {1}".format("b", "a") # => "a b b a"
-name = r"\r\ea"          # Caractères non échappés
-"%s %d" % ("Hello", 42)  # => "Hello 42"
-f"Bonjour {name}!"       # => "Bonjour Bob!"
+"%s %d" % ("Hello", 42)  # => "Hello 42" (ancien)
+','.join(["a","b","c"])  # => "a,b,c"
+"foobar".upper()         # => "FOOBAR"
+"FOOBAR".lower()         # => "foobar"
+"foobar".capitalize()    # => "Foobar"
+"un chat gris".title()   # => "Un Chat Gris"
 print("Hello", end="!")  # => "Hello!"
 print("Hello", )         # => "Hello" sans \n
-print("Hello")           # => "Hello\n"
 print("Error", file=sys.stderr) # sur stderr
-','.join(["a", "b", "c"]) # => "a,b,c"
-"foobar".upper() # => "FOOBAR"
-"FOOBAR".lower() # => "foobar"
-"foobar".capitalize() # => "Foobar"
-"un chat gris".title() # => "Un chat gris"
-
 \end{lstlisting}
 
 \section*{Listes}
@@ -190,15 +183,14 @@ Tableau dynamique d'objets modifiable, ordonné et indexé.
 \begin{lstlisting}
 a = []              # Nouvelle instance de liste vide
 len(a)              # => 0
-a.append(1)         # a = [1]
-a.append(2)         # a = [1, 2]
+a.append(1, 2)      # a = [1, 2]
 a.append(3, 4)      # a = [1, 2, 3, 4]
 a.pop()             # a = [1, 2, 3], retourne 4
 a[0]                # => 1
 a[-1]               # => 3 (en partant de la fin)
-a[42]               # => IndexError
+a[42]               # => Exception: IndexError
 a[0:3]              # => [1, 2, 3]
-a[0:3:1]            # => [1, 2, 3]
+a[0:3:2]            # => [1, 3] par pas de 2
 a[0:]               # de 0 à la fin
 a[:2]               # du début à 2
 a[::2]              # Un élément sur 2
@@ -207,20 +199,20 @@ del a[0]            # a = [2, 3] (supprime 1)
 b = [4] + [5, 6]    # b = [4, 5, 6]
 a + b               # => [1, 2, 3, 4, 5, 6]
 b.extend([8, 9])    # b = [4, 5, 6, 8, 9]
-1 in a              # => False
+1 in a              # => False (pas de 1 dans a)
 a, b, c = [1, 2, 3] # a = 1, b = 2, c = 3
-a, b = b, a         # a = 2, b = 1
+a, b = b, a         # a = 2, b = 1 (échanger)
 a = [1, 3.15, "Hu", [1, 2]] # Liste composite
 \end{lstlisting}
 
 \section*{Tuples}
-Liste non modifiable \emph{hashable} utilisable comme clé.
+Liste \textbf{non} modifiable \emph{hashable} utilisable comme clé.
 \begin{lstlisting}
 a = (1, 2, 3)  # Nouvelle instance de tuple
 a[0]           # => 1
-a[0] = 42      # TypeError
-hash(a)        # 529344067295497451
-return 1, 2    # => (1, 2)
+a[0] = 42      # Exception: TypeError
+hash(a)        # 529344067295497451 (signature unique)
+return 1, 2    # => (1, 2) retourne un tuple
 \end{lstlisting}
 
 \section*{Dictionnaires}
@@ -229,7 +221,7 @@ return 1, 2    # => (1, 2)
 a = {}                      # New instance de dict
 a["key"] = "value"          # Ajoute un élément
 b = {"key": "value"}        # ... autre méthode
-invalid = {[1,2]: "value"}  # TypeError
+invalid = {[1,2]: "value"}  # Exception: TypeError
 valid = {(1,2): "value"}    # Ok
 list(a.keys())              # => ["key"]
 list(a.values())            # => ["value"]
@@ -238,21 +230,26 @@ a.get("oops")               # => None
 a.get("oops", "default")    # => "default"
 u = {'bob': 42, 'alice': 43}
 u.items() # => dict_item([('bob', 42), ('alice', 43)])
+
+d1 = {'a': 1, 'b': 2}, d2 = {'c': 3, 'd': 4}
+merged = d1 | d2   # => {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+d1 |= d2  # d1 devient {'a': 1, 'b': 2, 'c': 3, 'd': 4}
 \end{lstlisting}
 
 \section*{Sets}
 Collection de valeurs uniques, sans ordre, non indexé.
 \begin{lstlisting}
-a = set()      # Nouvelle instance de set
+a = set()      # Nouvelle instance vide de set
 a.add(1)       # a = {1}
 a.add(2)       # a = {1, 2}
-a.add(2)       # a = {1, 2} Déjà dans a
+a.add(2)       # a = {1, 2} (pas de doublons)
+a.remove(2)    # a = {1}
 b = {2, 5, 7}  # Nouvelle instance de set
 a.union(b)     # => {1, 2, 5, 7}
 a & b          # => {2} Intersection
 a | b          # => {1, 2, 5, 7} Union
 a - b          # => {1} Différence
-1 in a         # => False
+1 in a         # => True (présent dans a)
 \end{lstlisting}
 
 \section*{Structures de contrôle}
@@ -264,7 +261,7 @@ elif x > 5:
     print("x est supérieur à 5")
 else:
     print("x est inférieur ou égal à 5")
-
+# Boucle for
 for animal in ["chat", "chien", "oiseau"]:
     print(f"Un {animal} est un mammifère")
 
@@ -272,8 +269,7 @@ for i in range(4): print(i, end=" ") # 0 1 2 3
 for i in range(4, 8): print(i, end=" ") # 4 5 6 7
 for i in range(0, 10, 2): print(i, end=" ") # 0 2 4 6 8
 
-animaux = ["cat", "dog", "fox"]
-for i, animal in enumerate(animaux):
+for i, animal in enumerate(["cat", "dog", "fox"]):
     print(f"{i}: {animal}") # 0: cat 1: dog 2: fox
 
 d = {"c": 1, "b": 2, "a": 3}
@@ -283,11 +279,13 @@ for k, v in d.items(): print(k, v) # a 3 b 2 c 1
 i = 0
 while i < 4: print(i := i + 1) # 1 2 3 4
 
-# Switch (Python >= 3.10)
+if (n := len(data)) > 10: # Opérateur Morse
+    print(f"Liste longue: {n} éléments")
+squares = [y for x in range(10) if (y := x**2) > 20]
+
 status = 400
 match status:
   case 200: print("OK")
-  case 400: print("Bad Request")
   case 404: print("Not Found")
   case k
   case _: print("Status inconnu") # Default
@@ -295,77 +293,67 @@ match status:
 
 \section*{Fonctions}
 \begin{lstlisting}
-def foo:
-    pass # Pass est un mot clé qui ne fait rien
-
+def foo: # Fonction vide
+    pass # Ou ...
 def add(a, b, c): # a, b, c sont des paramètres
     return a + b + c # Retourne la somme
-
 def add(a, b, c=0): # Paramètre optionnel
     return a, b, c # Retourne un tuple
-
 def add(a, b, *args): # Paramètre de type tuple
     return a + b + sum(args)
-
-def display(*args):
+def display(*args): # ex: display(1,2,3,4)
     for arg in args: print(arg)
-
 def display(**kwargs): # dict en entrée
     for key, value in kwargs.items(): print(key, value)
-
 def bar(a, b=0, *args, **kwargs):
     print(a, b, args, kwargs)
-bar(1, 2, 3, c=9, d=(1,2))
-# => 1 2 (3,) {'c': 9, 'd': (1, 2)}
-
-f = lambda x, y: x + y # Fonctions anonymes
+bar(1,2,3,c=9,d=(1,2)) # => 1 2 (3,) {'c':9, 'd':(1, 2)}
+f = lambda x, y: x + y # Fonctions anonymes (closures)
 f(1, 2)                # => 3
-def iterate(x, f):
+def iterate(x, f):     # Fonction en paramètre
     for i in range(x):
         f(i)
-iterate(3, lambda i: print(i)) # => 0 1 2
-
+iterate(3, lambda i: print(i)) # => 0 1 2 (fonctionnel)
 (lambda x: x > 2)(3)                 # => True
 (lambda x, y: x ** 2 + y ** 2)(2, 3) # => 5
-
 x = 0 # Scope global (mauvaise pratique)
 def foo():
-    global x                  # ... pas bien.
+    global x  # ... pas bien.
     x = 42
 foo() # x => 42
-
-def foo():                    # Fonctions imbriquées
+def foo():  # Fonctions imbriquées
     def bar():
         print("bar")
     bar()
-
-def double_numbers(iterable): # Générateur
-for i in iterable:
-    yield i + i
-
-# Annotation de fonction (Python >= 3.8)
-def add(x: float, y: int) -> tuple:
-    return (x, y, x + y)
+# Types Union (Python >= 3.10)
+def process(value: int | str | None) -> str:
+    match value:
+        case int():
+            return f"Nombre: {value}"
+        case str():
+            return f"Texte: {value}"
+        case None:
+            return "Aucune valeur"
+def add(a, b, /, c=0):  # a,b sont positionnels uniquement
+    return a + b + c
 \end{lstlisting}
 
 \section*{Fichiers}
 \begin{lstlisting}
-# Ouverture d'un fichier
-with open("file.txt", "r") as fp:
+with open("file.txt", "r") as fp: # Ouverture fichier
     for line in fp:
         print(line) # Affiche chaque ligne
-# r: lecture seule, w: écriture seule, a: écriture à la suite
-# b, mode binaire (rb, wb, ...)
-# t, mode texte (rt, wt, ...)
-# +, mode plus (r+, w+, ...)
-# U, mode UTF-8 (rU, wU, ...)
-fp = open("foo.txt", "w") # Mauvaise pratique
+# r: lecture seule, w: écriture, a: écriture à la suite
+# b: binaire (rb, wb, ...), t: mode texte (rt, wt, ...)
+# +: plus (r+, w+, ...), U: mode UTF-8 (rU, wU, ...)
 \end{lstlisting}
 
 \section*{Exceptions}
 \begin{lstlisting}
 try:
     # Code susceptible d'échouer
+except (TypeError, ValueError) as e: # Multi-catch
+    raise OtherError("msg") from e # Chaînage
 except Exception as e:
     # Code exécuté en cas d'erreur
 else:
@@ -380,21 +368,32 @@ finally:
 {x for x in range(5)}         # => {0, 1, 2, 3, 4}
 {x: 5 ** x for x in range(2)} # => {0: 1, 1: 5}
 [x for x in range(5) if x % 2 == 0] # => [0, 2, 4]
-
-# Générateur sous forme de compréhension
-values = (-x for x in [1,2,3,4,5])
-
 [(temp * 9/5) + 32 for temp in ctemps] # ${^\circ}$C -> ${^\circ}$F
+\end{lstlisting}
+
+\section*{Générateurs}
+\begin{lstlisting}
+values = (-x for x in [1,2,3,4,5]) # => Générateur
+next(values) # => -1
+next(values) # => -2
+def flatten(nested):
+    for item in nested:
+        if isinstance(item, list):
+            yield from flatten(item)  # Délègue
+        else:
+            yield item
+list(flatten([1, [2, 3], [4, [5, 6]]])) # [1,2,3,4,5,6]
+u = range(5) # itérateur paresseux (c'est un générateur)
 \end{lstlisting}
 
 \section*{Math}
 \begin{lstlisting}
 import math
-math.sqrt(16)         # => 4.0
-math.sin(math.pi / 2) # => 1.0
-math.perm(5, 3)       # => 120
+math.sqrt(16)         # => 4.0 # Racine carrée
+math.sin(math.pi / 2) # => 1.0 # Sinus
+math.perm(5, 3)       # => 120 # Permutations P(5,3)
 math.factorial(25)    # => 15511210043330985984000000
-math.gcd(3912, 4830)  # => 6
+math.gcd(3912, 4830)  # => 6 # Plus grand commun diviseur
 \end{lstlisting}
 
 \section*{Classes}
@@ -530,6 +529,9 @@ filter(lambda x: x % 2 == 0, [1,2,3,4,5]) # => [2, 4]
 \begin{lstlisting}
 from math import sqrt, prod  # Bonne pratique
 from math import *           # Mauvaise pratique
+from . import submodule # Import relatif
+from .submodule import func # Import relatif
+import pandas as pd  # Alias
 
 # Comportement par défaut à l'appel du script
 if __name__ == '__main__':
@@ -560,8 +562,7 @@ array([[0, 0, 0, 0, 0],
 array([[1.+0.j, 2.+0.j],
        [3.+0.j, 4.+0.j]])
 >>> np.linspace(0, 2, 6)
-array([0. , 0.4, 0.8, 1.2, 1.6, 2. ])
-\end{lstlisting}
+array([0. , 0.4, 0.8, 1.2, 1.6, 2. ])\end{lstlisting}
 
 \subsection*{Matplotlib (graphiques)}
 \begin{lstlisting}
@@ -571,8 +572,7 @@ array([0. , 0.4, 0.8, 1.2, 1.6, 2. ])
 >>> plt.plot(x, y)
 [<matplotlib.lines.Line2D object at 0x7f8b8b8b9b90>]
 >>> plt.ylabel('some numbers')
->>> plt.show()
-\end{lstlisting}
+>>> plt.show()\end{lstlisting}
 
 \subsection*{Functools (fonctions spéciales)}
 \begin{lstlisting}
@@ -583,8 +583,7 @@ def factorial(n):
 
 reduce(lambda x, y: x * y, [1, 2, 3, 4, 5]) # => 120
 import operator
-functools.reduce(operator.mul, [1, 2, 3])   # => 6
-\end{lstlisting}
+functools.reduce(operator.mul, [1, 2, 3])   # => 6\end{lstlisting}
 
 \subsection*{Itertools (itérateurs)}
 \begin{lstlisting}
@@ -594,8 +593,7 @@ product('ABCD', 'xy') # => Ax Ay Bx By Cx Cy Dx Dy
 permutations('ABCD', 2)
 # => AB AC AD BA BC BD CA CB CD DA DB DC
 combinations_with_replacement('ABCD', 2)
-# => AA AB AC AD BB BC BD CC CD DD
-\end{lstlisting}
+# => AA AB AC AD BB BC BD CC CD DD\end{lstlisting}
 
 \subsection*{Collections (conteneurs d'abstraction)}
 \begin{lstlisting}
@@ -614,8 +612,7 @@ class DefaultDict(Mapping):
     def __len__(self):
         return len(self.store)
     def __repr__(self):
-        return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)
-\end{lstlisting}
+        return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)\end{lstlisting}
 
 \subsection*{Click (interfaces en ligne de commande)}
 \begin{lstlisting}
@@ -625,8 +622,7 @@ class DefaultDict(Mapping):
 def hello(name, age):
     click.echo('Hello %s!' % name)
     click.echo('You are %s years old.' % age)
-hello()
-\end{lstlisting}
+hello()\end{lstlisting}
 
 \subsection*{Expressions régulières}
 \begin{lstlisting}
@@ -634,12 +630,37 @@ import re
 re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
 ['foot', 'fell', 'fastest']
 re.split(r'\s*', 'a b c  d') # ['a', 'b', 'c', 'd']
-re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
-\end{lstlisting}
+re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'\end{lstlisting}
+
+\section*{Annotations}
+\begin{lstlisting}
+from collections.abc import Callable, Sequence, Mapping
+from typing import Tuple, Union, Optional, Any, Callable
+from typing import TypeAlias
+from numbers import Real
+Number: TypeAlias = Real | complex # int, float et complex
+def add(x: float, y: int) -> tuple[float, int, float]:
+    return (x, y, x + y)
+def process(data: Sequence[Number]) -> dict[str, float]:
+    return {"mean": float(sum(data)) / len(data)}  # attention: plante si data est vide
+x: int | float # == Union[int, float]
+maybe_text: str | None  # == Optional[str]
+ids: list[int]
+scores: dict[str, float]
+coords: tuple[int, int]    # tuple de longueur fixe
+row: tuple[int, ...]       # tuple homogène, longueur variable
+tags: set[str]
+# Collections abstraites
+cfg: Mapping[str, float]   # accepte dict et autres mappings
+nums: Sequence[Number]     # accepte list, tuple, array, etc.
+op: Callable[[int, int], int]      # Fonction avec 2 args int
+any_arity: Callable[..., int]      # nombre d'args libre\end{lstlisting}
 
 \section*{Modules}
 \begin{description}
+\item[asyncio] programmation asynchrone
 \item[beautifulsoup4] pour manipuler des pages web
+\item[dataclasses] pour créer des classes avec moins de code
 \item[flask] framework pour créer des applications web
 \item[functools] pour manipuler des fonctions
 \item[itertools] pour manipuler des itérateurs
@@ -648,12 +669,15 @@ re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
 \item[numpy] pour manipuler des tableaux
 \item[opencv] pour manipuler des images
 \item[pandas] pour manipuler des données
+\item[pathlib] pour manipuler des chemins de fichiers
 \item[pillow] pour manipuler des images
 \item[pint] pour manipuler des unités
+\item[pydantic] validation de données avec types
 \item[pytest] pour tester des applications
 \item[requests] pour manipuler des requêtes HTTP
 \item[scipy] pour manipuler des fonctions mathématiques
 \item[seaborn] pour manipuler des graphiques
+\item[typing] pour les annotations de types
 \item[pickle, yaml, json] pour manipuler des fichiers sérialisés
 \item[click] pour des interfaces en ligne de commande
 \end{description}
@@ -663,6 +687,12 @@ re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'
     \item[PEP 8] Formattage du code Python
     \item[PEP 20] Zen of Python
     \item[PEP 257] Docstring Conventions (commentaires)
+    \item[PEP 484] Type Hints (annotations de types)
+    \item[PEP 526] Variable Annotations
+    \item[PEP 570] Positional-Only Parameters
+    \item[PEP 572] Assignment Expressions (walrus operator :=)
+    \item[PEP 585] Type Hinting Generics
+    \item[PEP 604] Union Operators (X | Y)
     \item[PEP 622] Structural Pattern Matching (match/case)
     \item[PEP 695] Syntaxe du type hinting
     \item[PEP 701] Syntaxe des fstrings
