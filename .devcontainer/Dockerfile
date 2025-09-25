@@ -49,7 +49,7 @@ RUN apk add --no-cache python3 py3-pip py3-pygments py3-yaml py3-pikepdf py3-git
 
 RUN tlmgr install exam amsmath xfrac siunitx qrcode tabulary realboxes inconsolata \
     mdframed zref needspace listings ragged2e bashful underscore luacode pgfplots polyglossia \
-    koma-script extsizes fontawesome
+    koma-script extsizes fontawesome sectsty
 
 RUN apk add --no-cache gcc qpdf ttf-dejavu
 
