@@ -1,6 +1,6 @@
 # Carte de référence Python 3.x
 
-![.github/workflows/ci.yml](https://github.com/heig-tin-info/refcard-python/workflows/.github/workflows/ci.yml/badge.svg)
+![CI](https://github.com/heig-tin-info/refcard-python/actions/workflows/ci.yml/badge.svg?branch=master)
 
 Cette carte de référence est destinée à accompagner l'étudiant durant ses études d'ingénieur. Elle est en principe autorisée durant les travaux écrits et examens ; à confirmer par le professeur en charge de dispenser la matière.
 
