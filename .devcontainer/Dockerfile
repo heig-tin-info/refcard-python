@@ -49,9 +49,9 @@ RUN apk add --no-cache python3 py3-pip py3-pygments py3-yaml py3-pikepdf py3-git
 
 RUN tlmgr install exam amsmath xfrac siunitx qrcode tabulary realboxes inconsolata \
     mdframed zref needspace listings ragged2e bashful underscore luacode pgfplots polyglossia
-RUN tlgmr install scrextend
+
 RUN apk add --no-cache gcc build-base qpdf ttf-dejavu
 
 RUN git config --global --add safe.directory /srv%
 
-RUN tlmgr install extsizes fontawesome menukeys relsize
+RUN tlmgr install scrextend extsizes fontawesome menukeys relsize
