@@ -399,52 +399,44 @@ math.gcd(3912, 4830)  # => 6 # Plus grand commun diviseur
 \section*{Classes}
 \begin{lstlisting}
 class Human: # Instance de type
-    # Shared class attribute by all instances
-    species = "Homo Sapiens"
+    species = "Homo Sapiens" # Attribut de classe partagé
 
-    # Initialiseur (appelé à l'instanciation)
-    def __init__(self, name):
-        self.name = name # Propriété publique
-        self._age = 0 # Propriété cachée
+    def __init__(self, name): # Initialiseur
+        self.name = name # Attribut publique
+        self._age = 0 # Attribut cachée
     def say(self, msg):
         print(f"{self.name}: {msg}")
     def sing(self):
         return 'yo... yo... microphone check...'
     @classmethod # Partagée par toutes les instances
-    def get_species(cls):
-        return cls.species
+    def get_species(cls): return cls.species
     @staticmethod # Méthode sans références
-    def grunt():
-        print("*grunt*")
+    def grunt(): print("*grunt*")
     @property     # Getter
-    def age(self):
-        return self._age
+    def age(self): return self._age
     @age.setter   # Setter
     def age(self, value):
-        if value < 0:
-            raise ValueError("Age non valide")
+        if value < 0: raise ValueError("Age non valide")
         self._age = value
     @age.deleter # Suppresseur
     def age(self):
         raise AttributeError("Age non supprimable")
     # Methodes magiques
-    def __str__(self):
+    def __str__(self): # Conversion en str
         return f"{self.name} ({self.age})"
-    def __repr__(self):
+    def __repr__(self): # Affichage sur REPL
         return f"Human('{self.name}', {self.age})"
-    def __len__(self):
+    def __len__(self): # len(instance)
         return len(self.name)
 
 class Supehero(Human): # Héritage
     species = "Super Homme"
-
     def __init__(self, name, movie=False,
         superpowers=["strength", "bulletproofing"]):
         self.fictional = True
         self.movie = movie
         self.superpowers = superpowers
         super().__init__(name) # Human __init__
-
     def sing(self): # Surcharge de sing
         return 'Dun, dun, DUN!'
 
@@ -452,11 +444,13 @@ class Batman(Human, Superhero): # Héritage multiple
     def __init__(self, *args, **kwargs):
         Superhero.__init__(self, None, movie=True,
             superpowers=['Wealthy'], *args, **kwargs)
-        Bat.__init__(self, *args, can_fly=False,
-            **kwargs)
+        Bat.__init__(self,*args,can_fly=False,**kwargs)
+        self.name = 'Sad Affleck' # Surcharge
 
-        # override the value for the name attribute
-        self.name = 'Sad Affleck'
+@dataclass # Génère le __init__, __repr__, __eq__, ...
+class Point: # Classe de données
+    x: float
+    y: float = 42 # Valeur par défaut
 \end{lstlisting}
 
 \section*{Décorateurs}
@@ -485,19 +479,15 @@ print(say(say_please=True))  # Please! I am poor :(
 import logging
 logging.warning('Watch out!')  # Sur la console
 logging.info('I told you so')  # N'affiche rien
-
 logging.basicConfig(filename='example.log',
     encoding='utf-8', level=logging.DEBUG)
 logging.debug('Un message')
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
 formatter = logging.Formatter('%(asctime)s - %(name)s'
     ' - %(levelname)s - %(message)s')
 logger.setFormatter(formatter)
 logger.addHandler(logging.StreamHandler())
-
 \end{lstlisting}
 
 \section*{Singleton}
@@ -626,11 +616,11 @@ hello()\end{lstlisting}
 
 \subsection*{Expressions régulières}
 \begin{lstlisting}
-import re
-re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
-['foot', 'fell', 'fastest']
-re.split(r'\s*', 'a b c  d') # ['a', 'b', 'c', 'd']
-re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'\end{lstlisting}
+>>> import re
+>>> re.findall(r'\bc[aeiouy]*', 'quel canard est bleu')
+['canard']
+>>> re.split(r'\s*', 'a b c  d') # ['a', 'b', 'c', 'd']
+>>> re.sub(r'[aeiouy]', '', 'champion') # 'chmprn'\end{lstlisting}
 
 \section*{Annotations}
 \begin{lstlisting}
