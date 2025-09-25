@@ -48,10 +48,9 @@ RUN apk add --no-cache make ghostscript fontconfig ttf-freefont ncurses clisp qp
 RUN apk add --no-cache python3 py3-pip py3-pygments py3-yaml py3-pikepdf py3-gitpython py3-jinja2 py3-babel
 
 RUN tlmgr install exam amsmath xfrac siunitx qrcode tabulary realboxes inconsolata \
-    mdframed zref needspace listings ragged2e bashful underscore luacode pgfplots polyglossia
+    mdframed zref needspace listings ragged2e bashful underscore luacode pgfplots polyglossia \
+    koma-script extsizes fontawesome
 
-RUN apk add --no-cache gcc build-base qpdf ttf-dejavu
+RUN apk add --no-cache gcc qpdf ttf-dejavu
 
 RUN git config --global --add safe.directory /srv%
-
-RUN tlmgr install scrextend extsizes fontawesome menukeys relsize
