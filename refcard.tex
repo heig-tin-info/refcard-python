@@ -183,8 +183,8 @@ Tableau dynamique d'objets modifiable, ordonné et indexé.
 \begin{lstlisting}
 a = []              # Nouvelle instance de liste vide
 len(a)              # => 0
-a.append(1, 2)      # a = [1, 2]
-a.append(3, 4)      # a = [1, 2, 3, 4]
+a.extend([1, 2])    # a = [1, 2]
+a.extend([3, 4])    # a = [1, 2, 3, 4]
 a.pop()             # a = [1, 2, 3], retourne 4
 a[0]                # => 1
 a[-1]               # => 3 (en partant de la fin)
@@ -287,7 +287,7 @@ status = 400
 match status:
   case 200: print("OK")
   case 404: print("Not Found")
-  case k
+  case 400: print("Bad Request")
   case _: print("Status inconnu") # Default
 \end{lstlisting}
 
@@ -352,14 +352,24 @@ with open("file.txt", "r") as fp: # Ouverture fichier
 \begin{lstlisting}
 try:
     # Code susceptible d'échouer
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Division par zéro!")
 except (TypeError, ValueError) as e: # Multi-catch
     raise OtherError("msg") from e # Chaînage
 except Exception as e:
     # Code exécuté en cas d'erreur
+    print(f"Erreur: {e}")
 else:
     # Code exécuté en cas de succès
+    print("Succès!")
 finally:
     # Code exécuté quelque soit le résultat
+    print("Nettoyage")
+
+# Exceptions courantes:
+# ValueError, TypeError, KeyError, IndexError,
+# AttributeError, ImportError, FileNotFoundError
 \end{lstlisting}
 
 \section*{Compréhensions}
@@ -386,14 +396,21 @@ list(flatten([1, [2, 3], [4, [5, 6]]])) # [1,2,3,4,5,6]
 u = range(5) # itérateur paresseux (c'est un générateur)
 \end{lstlisting}
 
-\section*{Math}
+\section*{Math et Random}
 \begin{lstlisting}
-import math
+import math, random
 math.sqrt(16)         # => 4.0 # Racine carrée
 math.sin(math.pi / 2) # => 1.0 # Sinus
-math.perm(5, 3)       # => 120 # Permutations P(5,3)
-math.factorial(25)    # => 15511210043330985984000000
-math.gcd(3912, 4830)  # => 6 # Plus grand commun diviseur
+math.log(math.e)      # => 1.0 # Logarithme naturel
+math.ceil(3.2)        # => 4 # Arrondi supérieur
+math.floor(3.8)       # => 3 # Arrondi inférieur
+math.gcd(12, 8)       # => 4 # PGCD
+math.factorial(5)     # => 120
+
+random.random()       # => 0.123... [0.0, 1.0)
+random.randint(1, 6)  # => 3 (entier entre 1 et 6)
+random.choice(['a','b','c']) # => 'b'
+random.shuffle(liste) # Mélange la liste sur place
 \end{lstlisting}
 
 \section*{Classes}
@@ -429,7 +446,7 @@ class Human: # Instance de type
     def __len__(self): # len(instance)
         return len(self.name)
 
-class Supehero(Human): # Héritage
+class Superhero(Human): # Héritage
     species = "Super Homme"
     def __init__(self, name, movie=False,
         superpowers=["strength", "bulletproofing"]):
@@ -440,22 +457,25 @@ class Supehero(Human): # Héritage
     def sing(self): # Surcharge de sing
         return 'Dun, dun, DUN!'
 
-class Batman(Human, Superhero): # Héritage multiple
-    def __init__(self, *args, **kwargs):
-        Superhero.__init__(self, None, movie=True,
-            superpowers=['Wealthy'], *args, **kwargs)
-        Bat.__init__(self,*args,can_fly=False,**kwargs)
-        self.name = 'Sad Affleck' # Surcharge
+# Usage
+hero = Superhero("Superman")
+print(hero.sing())  # => 'Dun, dun, DUN!'
 
 @dataclass # Génère le __init__, __repr__, __eq__, ...
 class Point: # Classe de données
     x: float
     y: float = 42 # Valeur par défaut
+    
+    def distance(self) -> float:
+        return (self.x**2 + self.y**2)**0.5
+
+p = Point(3.0, 4.0)  # Point(x=3.0, y=4.0)
+p.distance()         # => 5.0
 \end{lstlisting}
 
 \section*{Décorateurs}
 \begin{lstlisting}
-from functools import wraps
+from functools import wraps, cache
 def beg(target_function):
     @wraps(target_function)
     def wrapper(*args, **kwargs):
@@ -490,16 +510,20 @@ logger.setFormatter(formatter)
 logger.addHandler(logging.StreamHandler())
 \end{lstlisting}
 
-\section*{Singleton}
+\section*{Context Managers}
 \begin{lstlisting}
-class Singleton(type):
-_instances = {}
-def __call__(cls, *args, **kwargs):
-    if cls not in cls._instances:
-        cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-    return cls._instances[cls]
-class MyClass(BaseClass, metaclass=Singleton):
-    pass
+with open("file.txt") as f:
+    content = f.read()  # Fichier fermé automatiquement
+
+class MyContext:
+    def __enter__(self):
+        print("Entrée dans le contexte")
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Sortie du contexte")
+
+with MyContext() as ctx:
+    print("Dans le contexte")
 \end{lstlisting}
 
 \section*{Opérations sur les listes}
@@ -513,6 +537,27 @@ for i, (x, y) in u:
     print(i, x, y)
 
 filter(lambda x: x % 2 == 0, [1,2,3,4,5]) # => [2, 4]
+map(lambda x: x*2, [1,2,3]) # => [2, 4, 6]
+all([True, True, False])    # => False
+any([True, False, False])   # => True
+min([3, 1, 4, 1, 5])       # => 1
+max([3, 1, 4, 1, 5])       # => 5
+sum([1, 2, 3, 4, 5])       # => 15
+sorted([3, 1, 4, 1, 5])    # => [1, 1, 3, 4, 5]
+reversed([1, 2, 3])        # => [3, 2, 1]
+\end{lstlisting}
+
+\section*{Fonctions built-in utiles}
+\begin{lstlisting}
+abs(-42)                   # => 42 (valeur absolue)
+round(3.14159, 2)          # => 3.14 (arrondi)
+pow(2, 3)                  # => 8 (puissance)
+divmod(7, 3)               # => (2, 1) (quotient, reste)
+isinstance(42, int)        # => True (type checking)
+hasattr(obj, 'attr')       # => Bool (attribut exists?)
+getattr(obj, 'attr', None) # Valeur attr ou défaut
+vars(obj)                  # => dict des attributs
+dir(obj)                   # => list des méthodes/attributs
 \end{lstlisting}
 
 \section*{Import et modules}
@@ -585,34 +630,34 @@ permutations('ABCD', 2)
 combinations_with_replacement('ABCD', 2)
 # => AA AB AC AD BB BC BD CC CD DD\end{lstlisting}
 
-\subsection*{Collections (conteneurs d'abstraction)}
+\subsection*{Collections (conteneurs spécialisés)}
 \begin{lstlisting}
-from collections.abc import Mapping
-class DefaultDict(Mapping):
-    def __init__(self, default_factory=None, *args, **kwargs):
-        self.default_factory = default_factory
-        self.store = dict()
-        self.update(dict(*args, **kwargs))
-    def __getitem__(self, key):
-        if key not in self.store:
-            self.store[key] = self.default_factory()
-        return self.store[key]
-    def __iter__(self):
-        return iter(self.store)
-    def __len__(self):
-        return len(self.store)
-    def __repr__(self):
-        return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)\end{lstlisting}
+from collections import defaultdict, Counter, deque
+# Dict avec valeur par défaut
+dd = defaultdict(list)
+dd['key'].append('value')  # Pas de KeyError
 
-\subsection*{Click (interfaces en ligne de commande)}
+# Compteur
+c = Counter(['a', 'b', 'c', 'a', 'b', 'b'])
+# => Counter({'b': 3, 'a': 2, 'c': 1})
+
+# Deque (double-ended queue)
+dq = deque([1, 2, 3])
+dq.appendleft(0)    # => deque([0, 1, 2, 3])
+dq.pop()           # => 3, deque([0, 1, 2])
+\end{lstlisting}
+
+\subsection*{Datetime (dates et temps)}
 \begin{lstlisting}
-@click.command
-@click.option('--name', prompt='Your name', help='')
-@click.option('--age', prompt='Your age', help='')
-def hello(name, age):
-    click.echo('Hello %s!' % name)
-    click.echo('You are %s years old.' % age)
-hello()\end{lstlisting}
+from datetime import datetime, date, timedelta
+now = datetime.now()      # Maintenant
+today = date.today()      # Aujourd'hui
+dt = datetime(2023, 12, 25, 14, 30)  # Date spécifique
+dt.strftime("%Y-%m-%d %H:%M")  # => "2023-12-25 14:30"
+datetime.strptime("2023-12-25", "%Y-%m-%d")
+tomorrow = today + timedelta(days=1)
+week_ago = now - timedelta(weeks=1)
+\end{lstlisting}
 
 \subsection*{Expressions régulières}
 \begin{lstlisting}
@@ -646,46 +691,34 @@ nums: Sequence[Number]     # accepte list, tuple, array, etc.
 op: Callable[[int, int], int]      # Fonction avec 2 args int
 any_arity: Callable[..., int]      # nombre d'args libre\end{lstlisting}
 
-\section*{Modules}
+\section*{Modules essentiels}
 \begin{description}
+\item[os, sys] système d'exploitation et interpréteur
+\item[pathlib] manipulation moderne de chemins
+\item[json, pickle] sérialisation de données
+\item[re] expressions régulières
+\item[datetime] dates et heures
+\item[collections] conteneurs spécialisés
+\item[itertools] itérateurs avancés
+\item[functools] outils pour fonctions
+\item[typing] annotations de types
+\item[dataclasses] classes de données
 \item[asyncio] programmation asynchrone
-\item[beautifulsoup4] pour manipuler des pages web
-\item[dataclasses] pour créer des classes avec moins de code
-\item[flask] framework pour créer des applications web
-\item[functools] pour manipuler des fonctions
-\item[itertools] pour manipuler des itérateurs
-\item[jinja] moteur de template
-\item[matplotlib] pour créer des graphiques
-\item[numpy] pour manipuler des tableaux
-\item[opencv] pour manipuler des images
-\item[pandas] pour manipuler des données
-\item[pathlib] pour manipuler des chemins de fichiers
-\item[pillow] pour manipuler des images
-\item[pint] pour manipuler des unités
-\item[pydantic] validation de données avec types
-\item[pytest] pour tester des applications
-\item[requests] pour manipuler des requêtes HTTP
-\item[scipy] pour manipuler des fonctions mathématiques
-\item[seaborn] pour manipuler des graphiques
-\item[typing] pour les annotations de types
-\item[pickle, yaml, json] pour manipuler des fichiers sérialisés
-\item[click] pour des interfaces en ligne de commande
+\item[logging] journalisation
+\item[unittest, pytest] tests unitaires
+\item[requests] requêtes HTTP
+\item[numpy] calcul numérique
+\item[pandas] analyse de données
+\item[matplotlib] graphiques
 \end{description}
 
-\subsection*{PEP (Python Enhancement Proposals)}
+\subsection*{PEP importants}
 \begin{description}
-    \item[PEP 8] Formattage du code Python
-    \item[PEP 20] Zen of Python
-    \item[PEP 257] Docstring Conventions (commentaires)
-    \item[PEP 484] Type Hints (annotations de types)
-    \item[PEP 526] Variable Annotations
-    \item[PEP 570] Positional-Only Parameters
-    \item[PEP 572] Assignment Expressions (walrus operator :=)
-    \item[PEP 585] Type Hinting Generics
-    \item[PEP 604] Union Operators (X | Y)
-    \item[PEP 622] Structural Pattern Matching (match/case)
-    \item[PEP 695] Syntaxe du type hinting
-    \item[PEP 701] Syntaxe des fstrings
+    \item[PEP 8] Style de code Python
+    \item[PEP 20] Zen of Python (\cd{import this})
+    \item[PEP 484] Type Hints (annotations)
+    \item[PEP 572] Opérateur Walrus (:=)
+    \item[PEP 622] Pattern Matching (match/case)
 \end{description}
 
 \end{multicols*}
