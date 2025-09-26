@@ -119,16 +119,30 @@ des cours utilisant \emph{python} à moins que le contraire ne soit explicitemen
     Chaîne & \texttt{"Hello"} & Suite de caractères Unicode \\
     None & \texttt{None} & Objet spécial, valeur nulle \\
     Ellipse & \texttt{...} & Objet spécial, valeur incomplète \\
+    Slice & \texttt{slice(0, 10, 2)} & Objet de découpage \\
 \end{tabularx}
 
-\section*{Type de conteneurs}
+\section*{Conteneurs de base}
+M: Modifiable, O: Ordonné, I: Indexé\\
+\begin{tabularx}{\columnwidth}{lXc|c|c}
+    & & M & O & I \\
+Liste & \texttt{[1, 2, 3]} & x & x & x \\
+Tuple & \texttt{(1, 2, 3)} &   & x & x \\
+Dict & \texttt{\{1: "a", 2: "b"\}} & x & & x \\
+Set & \texttt{\{1, 2, 3\}} & x &  & x \\
+FrozenSet & \texttt{frozenset([1,2,3])} & & & \\
+\end{tabularx}
 
-\begin{tabularx}{\columnwidth}{llX}
-Liste & \texttt{[1, 2, 3]} & Modifiable, ordonnée, indexée \\
-Tuple & \texttt{(1, 2, 3)} & Non modifiable, ordonnée, indexée \\
-Dict & \texttt{\{1: "a", 2: "b"\}} & Modifiable, non ordonné, indexé \\
-Set & \texttt{\{1, 2, 3\}} & Modifiable, non ordonné, non indexé \\
-Slice & \texttt{slice(0, 10, 2)} & Objet de découpage \\
+\section*{Conteneurs spécialisés}
+\begin{tabularx}{\columnwidth}{lX}
+\texttt{collections.Counter} & Multiensemble (compte des éléments) \\
+\texttt{collections.defaultdict} & Dict avec valeur par défaut \\
+\texttt{collections.ChainMap} & Vue composée de plusieurs dict \\
+\texttt{queue.Queue} & File FIFO thread-safe (pas indexable) \\
+\texttt{queue.LifoQueue} & Pile LIFO thread-safe \\
+\texttt{queue.PriorityQueue} & File prioritaire thread-safe \\
+\texttt{heapq} & Tas binaire sur liste (min-heap) \\
+\texttt{types.MappingProxyType} & Vue \textbf{en lecture seule} sur un dict \\
 \end{tabularx}
 
 \section*{Comparaisons et logiques}
@@ -178,13 +192,20 @@ print("Hello", )         # => "Hello" sans \n
 print("Error", file=sys.stderr) # sur stderr
 \end{lstlisting}
 
+\section*{Bytes et Bytearray}
+\begin{lstlisting}
+b = b"Hello"       # Bytes immuable
+ba = bytearray(b)  # Bytearray modifiable
+mv = memoryview(b) # Vue sans copie
+\end{lstlisting}
+
 \section*{Listes}
 Tableau dynamique d'objets modifiable, ordonné et indexé.
 \begin{lstlisting}
-a = []              # Nouvelle instance de liste vide
-len(a)              # => 0
-a.append(1, 2)      # a = [1, 2]
-a.append(3, 4)      # a = [1, 2, 3, 4]
+a = [1]             # Nouvelle instance de liste
+len(a)              # => 1
+a.append(2)         # a = [1, 2]
+a.extend([3, 4])    # a = [1, 2, 3, 4]
 a.pop()             # a = [1, 2, 3], retourne 4
 a[0]                # => 1
 a[-1]               # => 3 (en partant de la fin)
@@ -287,7 +308,7 @@ status = 400
 match status:
   case 200: print("OK")
   case 404: print("Not Found")
-  case k
+  case 400 | 403: print("Error") # Multi-cases
   case _: print("Status inconnu") # Default
 \end{lstlisting}
 
@@ -351,15 +372,15 @@ with open("file.txt", "r") as fp: # Ouverture fichier
 \section*{Exceptions}
 \begin{lstlisting}
 try:
-    # Code susceptible d'échouer
+    result = 10 / 0 # Lève ZeroDivisionError
 except (TypeError, ValueError) as e: # Multi-catch
     raise OtherError("msg") from e # Chaînage
 except Exception as e:
-    # Code exécuté en cas d'erreur
+    print(f"Erreur: {e}")
 else:
-    # Code exécuté en cas de succès
+    print("Succès:", result) # Si pas d'erreur
 finally:
-    # Code exécuté quelque soit le résultat
+    print("Toujours exécuté")
 \end{lstlisting}
 
 \section*{Compréhensions}
@@ -429,7 +450,7 @@ class Human: # Instance de type
     def __len__(self): # len(instance)
         return len(self.name)
 
-class Supehero(Human): # Héritage
+class Superhero(Human): # Héritage
     species = "Super Homme"
     def __init__(self, name, movie=False,
         superpowers=["strength", "bulletproofing"]):
@@ -490,16 +511,19 @@ logger.setFormatter(formatter)
 logger.addHandler(logging.StreamHandler())
 \end{lstlisting}
 
-\section*{Singleton}
+\section*{Context Managers}
 \begin{lstlisting}
-class Singleton(type):
-_instances = {}
-def __call__(cls, *args, **kwargs):
-    if cls not in cls._instances:
-        cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-    return cls._instances[cls]
-class MyClass(BaseClass, metaclass=Singleton):
-    pass
+with open("file.txt") as f:
+    content = f.read()  # Fichier fermé automatiquement
+
+class MyContext:
+    def __enter__(self):
+        print("Entrée dans le contexte")
+        return self
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        print("Sortie du contexte")
+
+with MyContext() as ctx: print("Dans le contexte")
 \end{lstlisting}
 
 \section*{Opérations sur les listes}
@@ -585,24 +609,22 @@ permutations('ABCD', 2)
 combinations_with_replacement('ABCD', 2)
 # => AA AB AC AD BB BC BD CC CD DD\end{lstlisting}
 
-\subsection*{Collections (conteneurs d'abstraction)}
+\subsection*{Collections (conteneurs spécialisés)}
 \begin{lstlisting}
-from collections.abc import Mapping
-class DefaultDict(Mapping):
-    def __init__(self, default_factory=None, *args, **kwargs):
-        self.default_factory = default_factory
-        self.store = dict()
-        self.update(dict(*args, **kwargs))
-    def __getitem__(self, key):
-        if key not in self.store:
-            self.store[key] = self.default_factory()
-        return self.store[key]
-    def __iter__(self):
-        return iter(self.store)
-    def __len__(self):
-        return len(self.store)
-    def __repr__(self):
-        return 'DefaultDict(%s, %s)' % (self.default_factory, self.store)\end{lstlisting}
+from collections import defaultdict, Counter, deque
+# Dict avec valeur par défaut
+dd = defaultdict(list)
+dd['key'].append('value')  # Pas de KeyError
+
+# Compteur
+c = Counter(['a', 'b', 'c', 'a', 'b', 'b'])
+# => Counter({'b': 3, 'a': 2, 'c': 1})
+
+# Deque (double-ended queue)
+dq = deque([1, 2, 3])
+dq.appendleft(0)    # => deque([0, 1, 2, 3])
+dq.pop()           # => 3, deque([0, 1, 2])
+\end{lstlisting}
 
 \subsection*{Click (interfaces en ligne de commande)}
 \begin{lstlisting}
@@ -648,6 +670,7 @@ any_arity: Callable[..., int]      # nombre d'args libre\end{lstlisting}
 
 \section*{Modules}
 \begin{description}
+\item[os, sys] système d'exploitation et interpréteur
 \item[asyncio] programmation asynchrone
 \item[beautifulsoup4] pour manipuler des pages web
 \item[dataclasses] pour créer des classes avec moins de code
@@ -672,20 +695,13 @@ any_arity: Callable[..., int]      # nombre d'args libre\end{lstlisting}
 \item[click] pour des interfaces en ligne de commande
 \end{description}
 
-\subsection*{PEP (Python Enhancement Proposals)}
+\subsection*{PEP importants}
 \begin{description}
-    \item[PEP 8] Formattage du code Python
-    \item[PEP 20] Zen of Python
-    \item[PEP 257] Docstring Conventions (commentaires)
-    \item[PEP 484] Type Hints (annotations de types)
-    \item[PEP 526] Variable Annotations
-    \item[PEP 570] Positional-Only Parameters
-    \item[PEP 572] Assignment Expressions (walrus operator :=)
-    \item[PEP 585] Type Hinting Generics
-    \item[PEP 604] Union Operators (X | Y)
-    \item[PEP 622] Structural Pattern Matching (match/case)
-    \item[PEP 695] Syntaxe du type hinting
-    \item[PEP 701] Syntaxe des fstrings
+    \item[PEP 8] Style de code Python
+    \item[PEP 20] Zen of Python (\cd{import this})
+    \item[PEP 484] Type Hints (annotations)
+    \item[PEP 572] Opérateur Walrus (:=)
+    \item[PEP 622] Pattern Matching (match/case)
 \end{description}
 
 \end{multicols*}
